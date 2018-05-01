@@ -1,0 +1,13 @@
+name: SooperThemes GridStack
+type: module
+description: SooperThemes GridStack Views
+package: Glazed Premium Theme
+# core: 8.x
+dependencies:
+  - views
+
+# Information added by Drupal.org packaging script on 2018-02-20
+version: '8.x-1.0'
+core: '8.x'
+project: 'sooperthemes_gridstack'
+datestamp: 1519144474

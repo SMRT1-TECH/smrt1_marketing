@@ -1,0 +1,17 @@
+glazed_builder.settings:
+  type: mapping
+  label: 'Glazed Builder settings'
+  mapping:
+    bootstrap:
+      type: integer
+      label: 'Bootstrap asset load level for glazed builder'
+    media_browser:
+      type: string
+      label: 'Entity Browser for image resusability in Glazed builder editor'
+    development:
+      type: boolean
+      label: 'Whether or not the glazed builder is in development mode'
+    format_filters:
+      type: boolean
+      label: 'Process Text Format Filters on Frontend Builder content'
+

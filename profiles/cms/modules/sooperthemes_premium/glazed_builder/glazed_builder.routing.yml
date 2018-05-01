@@ -1,0 +1,40 @@
+glazed_builder.ajax_callback:
+  path: '/glazed_builder/ajax'
+  defaults:
+    _controller: 'Drupal\glazed_builder\Controller\AjaxController::ajaxCallback'
+  requirements:
+    _permission: 'access content'
+    _csrf_token: 'TRUE'
+
+glazed_builder.ajax_file_upload_callback:
+  path: '/glazed_builder/ajax/file_upload'
+  defaults:
+    _controller: 'Drupal\glazed_builder\Controller\AjaxController::fileUpload'
+  requirements:
+    _permission: 'access content'
+    _csrf_token: 'TRUE'
+  methods: [POST, DELETE]
+
+glazed_builder.admin_root:
+  path: '/admin/config/content/glazed_builder'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Glazed builder'
+  requirements:
+    _permission: 'administer glazed builder configuration'
+
+glazed_builder.admin_config:
+  path: '/admin/config/content/glazed_builder/config'
+  defaults:
+    _controller: 'Drupal\glazed_builder\Controller\PageController::configPage'
+    _title: 'Glazed Builder Configuration'
+  requirements:
+    _permission: 'administer glazed builder configuration'
+
+glazed_builder.admin_uninstall:
+  path: '/admin/config/content/glazed_builder/uninstall'
+  defaults:
+    _controller: 'Drupal\glazed_builder\Controller\PageController::uninstallPage'
+    _title: 'Uninstall'
+  requirements:
+    _permission: 'administer glazed builder configuration'
