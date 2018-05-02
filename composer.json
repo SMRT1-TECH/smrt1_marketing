@@ -8,7 +8,8 @@
         "wikimedia/composer-merge-plugin": "^1.4",
         "drupal/backup_migrate": "^4.0",
         "drupal/mailchimp": "^1.6",
-        "drupal/nocurrent_pass": "^1.0"
+        "drupal/nocurrent_pass": "^1.0",
+        "drupal/live_chat_slack": "1.x-dev"
     },
     "replace": {
         "drupal/core": "^8.5"
