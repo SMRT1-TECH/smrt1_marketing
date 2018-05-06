@@ -1,0 +1,27 @@
+core: 8.x
+type: theme
+version: 8.x-1.0
+base theme: glazed
+
+name: 'SMRT 1'
+description: 'A glazed based theme for the SMRT1 marketing site'
+package: 'Bootstrap'
+
+regions:
+  secondary_header: 'Secondary Header'
+  navigation: 'Navigation'
+  navigation_collapsible: 'Navigation (Collapsible)'
+  highlighted: 'Hero Region'
+  page_title: 'Page Title'
+  help: 'Help'
+  content_top: 'Content Top'
+  content: 'Content'
+  content_bottom: 'Content Bottom'
+  sidebar_first: 'Primary'
+  sidebar_second: 'Secondary'
+  footer: 'Footer'
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
+
+libraries:
+  - 'glazed_smrt1/global-styling'
