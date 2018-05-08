@@ -11,7 +11,9 @@
         "drupal/nocurrent_pass": "^1.0",
         "drupal/live_chat_slack": "1.x-dev",
         "drupal/imce": "^1.6",
-        "drupal/stage_file_proxy": "^1.0@alpha"
+        "drupal/stage_file_proxy": "^1.0@alpha",
+        "drupal/google_analytics": "^2.2",
+        "drupal/colorbox": "^1.4"
     },
     "replace": {
         "drupal/core": "^8.5"
