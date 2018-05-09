@@ -18,7 +18,8 @@
         "drupal/mailsystem": "^4.1",
         "drupal/mailgun": "^1.0@beta",
         "drupal/pathauto": "^1.2",
-        "drupal/simple_sitemap": "^2.12"
+        "drupal/simple_sitemap": "^2.12",
+        "drupal/acobot": "1.x-dev"
     },
     "replace": {
         "drupal/core": "^8.5"
