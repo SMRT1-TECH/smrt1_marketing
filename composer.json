@@ -19,7 +19,8 @@
         "drupal/mailgun": "^1.0@beta",
         "drupal/pathauto": "^1.2",
         "drupal/simple_sitemap": "^2.12",
-        "drupal/acobot": "1.x-dev"
+        "drupal/acobot": "1.x-dev",
+        "drupal/inline_responsive_images": "^2.1"
     },
     "replace": {
         "drupal/core": "^8.5"
