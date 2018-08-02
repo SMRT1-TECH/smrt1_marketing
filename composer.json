@@ -20,10 +20,10 @@
         "drupal/pathauto": "^1.2",
         "drupal/simple_sitemap": "^2.12",
         "drupal/acobot": "1.x-dev",
-        "drupal/inline_responsive_images": "^2.1"
+        "drupal/inline_responsive_images": "^2.1",
+        "drupal/core": "^8.5"
     },
     "replace": {
-        "drupal/core": "^8.5"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
