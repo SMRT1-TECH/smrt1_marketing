@@ -1,0 +1,20 @@
+<div id="gdpr-popup" class="{{data.popup_position}}" {{data.popup_color|raw}}>
+  <div class="gdpr-popup-content">
+    <div class="gdpr-popup-text {{data.popup_text}}">
+      <p class="gdpr-popup-cookies">
+      {% trans %}We use cookies on our website to support technical features that enhance your user experience.{% endtrans %}
+    </p>
+      <p class="gdpr-popup-analytics">
+      {% trans %}We also use analytics & advertising services. To opt-out click for more information.{% endtrans %}
+    </p>
+    </div>
+    <div class="gdpr-popup-buttons {{data.button_text}}">
+      <button type="button" id="gdpr-agree" {{data.button_color|raw}}>
+        {% trans %}I've read it{% endtrans %}
+      </button>
+      <button type="button" id="gdpr-find-more" data-morelink="{{data.popup_morelink}}" {{data.button_color|raw}}>
+        {% trans %}More information{% endtrans %}
+      </button>
+    </div>
+  </div>
+</div>
