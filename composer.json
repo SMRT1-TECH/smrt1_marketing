@@ -21,7 +21,10 @@
         "drupal/simple_sitemap": "^2.12",
         "drupal/acobot": "1.x-dev",
         "drupal/inline_responsive_images": "^2.1",
-        "drupal/core": "^8.5"
+        "drupal/core": "^8.5",
+        "drupal/shs": "^1.0@alpha",
+        "drupal/captcha": "^1.0@beta",
+        "drupal/recaptcha": "^2.3"
     },
     "replace": {
     },
