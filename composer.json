@@ -21,10 +21,11 @@
         "drupal/simple_sitemap": "^2.12",
         "drupal/acobot": "1.x-dev",
         "drupal/inline_responsive_images": "^2.1",
-        "drupal/core": "^8.5",
-        "drupal/shs": "^1.0@alpha",
+        "drupal/core": "^8.6",
+        "drupal/shs": "1.x-dev",
         "drupal/captcha": "^1.0@beta",
-        "drupal/recaptcha": "^2.3"
+        "drupal/recaptcha": "^2.3",
+        "webflo/drupal-core-require-dev": "^8.6"
     },
     "replace": {
     },
