@@ -25,7 +25,8 @@
         "drupal/shs": "1.x-dev",
         "drupal/captcha": "^1.0@beta",
         "drupal/recaptcha": "^2.3",
-        "webflo/drupal-core-require-dev": "^8.6"
+        "webflo/drupal-core-require-dev": "^8.6",
+        "drush/drush": "^9.5"
     },
     "replace": {
     },
