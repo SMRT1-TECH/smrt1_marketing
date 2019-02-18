@@ -168,10 +168,13 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
    * {@inheritdoc}
    */
   public function insertBaseTokens($content) {
+    // Get url-safe path, replace backslashes from windows paths
+    $filesDirectoryPath = str_replace('\\', '/', $this->getFilesDirectoryPath());
+    $modulePath = str_replace('\\', '/', $this->getModulePath());
     $replacements = [
       $this->getBaseUrl() => '-base-url-',
-      $this->getFilesDirectoryPath() => '-files-directory-',
-      $this->getModulePath() => '-module-directory-',
+      $filesDirectoryPath => '-files-directory-',
+      $modulePath => '-module-directory-',
     ];
 
     return str_replace(array_keys($replacements), array_values($replacements), $content);
@@ -181,10 +184,13 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
    * {@inheritdoc}
    */
   public function replaceBaseTokens(&$content) {
+    // Get url-safe path, replace backslashes from windows paths
+    $filesDirectoryPath = str_replace('\\', '/', $this->getFilesDirectoryPath());
+    $modulePath = str_replace('\\', '/', $this->getModulePath());
     $replacements = [
       '-base-url-' => $this->getBaseUrl(),
-      '-files-directory-' => $this->getFilesDirectoryPath(),
-      '-module-directory-' => $this->getModulePath(),
+      '-files-directory-' => $filesDirectoryPath,
+      '-module-directory-' => $modulePath,
     ];
 
     $content = str_replace(array_keys($replacements), array_values($replacements), $content);
@@ -214,6 +220,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
   public function editorAttach(&$element, &$settings) {
 
     $libraries = [];
+    $config = $this->configFactory->get('glazed_builder.settings');
     $settings['glazedTemplateElements'] = $this->getTemplateElements($libraries);
     if (count($libraries)) {
       foreach ($libraries as $library) {
@@ -227,7 +234,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
     $settings['cmsElementViewsSettings'] = $this->getCmsElementSettings();
 
     // Creating a list of views tags.
-	$settings['viewsTags'] = $this->getCmsViewsTags();
+    $settings['viewsTags'] = $this->getCmsViewsTags();
 
     // Creating a list of buttons style.
     $settings['buttonStyles'] = $this->getButtonStyles();
@@ -244,6 +251,13 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
     $default_scheme = \Drupal::config('system.file')->get('default_scheme');
     $settings['publicFilesFolder'] = file_create_url($default_scheme . '://');
     $settings['fileUploadFolder'] = file_create_url($default_scheme . '://glazed_builder_images');
+
+    if ($cke_stylesset = $config->get('cke_stylesset')) {
+      $settings['cke_stylesset'] = $this->ckeParseStyles($cke_stylesset);
+    }
+    if ($cke_fonts = $config->get('cke_fonts')) {
+      $settings['cke_fonts'] = str_replace(';;', ';', preg_replace("/[\n\r]/",";",$cke_fonts));
+    }
 
 
     $element['#attached']['library'][] = 'core/jquery.ui';
@@ -268,7 +282,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
     }
 
     $this->moduleHandler->alter('glazed_builder_classes', $glazed_classes);
-    $settings['glazedClasses'] = json_encode($glazed_classes);
+    $settings['glazedClasses'] = $glazed_classes;
 
     $styles = $this->entityManager->getStorage('image_style')->loadMultiple();
     $styles_list = ['original' => t('Original image (No resizing)')];
@@ -283,12 +297,46 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
       $element['#attached']['library'][] = 'media/view';
     }
 
-    if ($this->configFactory->get('glazed_builder.settings')->get('development')) {
+    if ($config->get('development')) {
       $element['#attached']['library'][] = 'glazed_builder/development';
     }
     else {
       $element['#attached']['library'][] = 'glazed_builder/production';
     }
+
+    $element['#cache']['tags'] = $config->getCacheTags();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function ckeParseStyles($css_classes) {
+    $set = array();
+    $input = trim($css_classes);
+    if (empty($input)) {
+      return $set;
+    }
+    // Handle both Unix and Windows line-endings.
+    foreach (explode("\n", str_replace("\r", '', $input)) as $line) {
+      $line = trim($line);
+      // [label]=[element].[class][.[class]][...] pattern expected.
+      if (!preg_match('@^.+= *[a-zA-Z0-9]+(\.[a-zA-Z0-9_ -]+)*$@', $line)) {
+        return FALSE;
+      }
+      list($label, $selector) = explode('=', $line, 2);
+      $classes = explode('.', $selector);
+      $element = array_shift($classes);
+
+      $style = array();
+      $style['name'] = trim($label);
+      $style['element'] = trim($element);
+      if (!empty($classes)) {
+        $style['attributes']['class'] = implode(' ', array_map('trim', $classes));
+      }
+      $set[] = $style;
+    }
+    return $set;
+
   }
 
   /**
@@ -303,9 +351,24 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
           $block_elements = $cache->data;
         }
         else {
+          $blacklist = [
+            // These two blocks can only be configured in display variant plugin.
+            // @see \Drupal\block\Plugin\DisplayVariant\BlockPageVariant
+            'page_title_block',
+            'system_main_block',
+            // Fallback plugin makes no sense here.
+            'broken',
+          ];
           $block_definitions = $this->blockManager->getDefinitions();
-          foreach($block_definitions as $key => $definition) {
-            $block_elements['block-' . $key] = $this->t('Block: @block_name', ['@block_name' => $definition['admin_label']])->render();
+          foreach($block_definitions as $block_id => $definition) {
+            $hidden = !empty($definition['_block_ui_hidden']);
+            $blacklisted = in_array($block_id, $blacklist);
+            $is_view = ($definition['provider'] == 'views');
+            $is_ctools = ($definition['provider'] == 'ctools');
+            if ($hidden || $blacklisted OR $is_view OR $is_ctools) {
+              continue;
+            }
+            $block_elements['block-' . $block_id] = $this->t('Block: @block_name', ['@block_name' => ucfirst($definition['category']) . ': ' . $definition['admin_label']])->render();
           }
 
           $this->cacheBackend->set('glazed_builder:cms_elements_blocks', $block_elements);
@@ -326,7 +389,8 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
             $executable_view = Views::getView($view->id());
             $executable_view->initDisplay();
             foreach ($executable_view->displayHandlers as $id => $display) {
-              $views_elements['view-' . $executable_view->id() . '-' . $id] = t('View: @view_name', ['@view_name' => $view->label() . ' (' . $display->display['display_title'] . ')'])->render();
+              $key = 'view-' . $executable_view->id() . '-' . $id;
+              $views_elements[$key] = t('View: @view_name', ['@view_name' => $view->label() . ' (' . $display->display['display_title'] . ')'])->render();
             }
           }
           $this->cacheBackend->set('glazed_builder:cms_elements_views', $views_elements);
@@ -335,7 +399,6 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
 
       $cms_elements = $block_elements + $views_elements;
     }
-
     return $cms_elements;
   }
 
@@ -344,8 +407,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
    */
   public function getFilesDirectoryPath() {
     $default_scheme = $this->configFactory->get('system.file')->get('default_scheme');
-
-    return ltrim(str_replace(realpath('.'), '', $this->fileSystem->realpath($default_scheme . '://')), '/');
+    return trim(str_replace($this->getBaseUrl(), '', file_create_url($default_scheme . '://')), '/');
   }
 
   /**
@@ -360,10 +422,6 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
       if ($element_info['type'] == 'view') {
         $output = $this->glazedViewHandler->getView($element_info['view_id'], $settings, $element_info['display_id'], $data, $assets);
       }
-
-      if (!$output) {
-        $output = $this->moduleHandler->invokeAll('glazed_cms_element', ['name' => $name, 'settings' => $settings]);
-      }
     }
 
     if (!$output) {
@@ -377,10 +435,10 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
    * {@inheritdoc}
    */
   public function getGlazedElementsFolders() {
-    $folder = $this->getModulePath() . DIRECTORY_SEPARATOR . 'glazed_elements';
+    $base_url = $this->getBaseUrl();
     $glazed_elements_folders = [[
-      'folder' => $folder,
-      'folder_url' => file_create_url($folder),
+      'folder' => realpath($this->getModulePath()) . DIRECTORY_SEPARATOR . 'glazed_elements',
+      'folder_url' => $base_url . '/' . $this->getModulePath() . '/' . 'glazed_elements',
     ]];
 
     $themes = $this->themeHandler->listInfo();
@@ -498,68 +556,66 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
       }
       else {
         $cms_view_elements_settings = [];
-        if ($this->moduleHandler->moduleExists('views')) {
-          $views = Views::getAllViews();
-          foreach ($views as $view) {
-            if (!$view->status()) {
-              continue;
+        $views = Views::getAllViews();
+        foreach ($views as $view) {
+          if (!$view->status()) {
+            continue;
+          }
+          $executable_view = Views::getView($view->id());
+          $executable_view->initDisplay();
+          foreach ($executable_view->displayHandlers as $id => $display) {
+            $key = 'az_view-' . $executable_view->id() . '-' . $id;
+            $executable_view->setDisplay($display->display['id']);
+            $title = $executable_view->getTitle();
+            $storage = $executable_view->storage;
+            $defaultDisplay = &$storage->getDisplay('default');
+
+            $cms_view_elements_settings[$key] = [
+              'view_display_type' => $display->getType(),
+              'title' => !empty($title) ? 1 : 0,
+              'contextual_filter' => isset($defaultDisplay['display_options']['arguments']) && count($defaultDisplay['display_options']['arguments']) ? 1 : 0
+            ];
+
+            $fields = isset($display->display['display_options']['fields']) ? $display->display['display_options']['fields'] : [];
+            // Copy field list form default display when possible.
+            if (count($fields) == 0  && $display->usesFields()) {
+              $fields = $defaultDisplay['display_options']['fields'];
             }
-            $executable_view = Views::getView($view->id());
-            $executable_view->initDisplay();
-            foreach ($executable_view->displayHandlers as $id => $display) {
-              $key = 'az_view-' . $executable_view->id() . '-' . $id;
-              $executable_view->setDisplay($display->display['id']);
-              $title = $executable_view->getTitle();
-              $storage = $executable_view->storage;
-              $defaultDisplay = &$storage->getDisplay('default');
-
-              $cms_view_elements_settings[$key] = [
-                'view_display_type' => $display->getType(),
-                'title' => !empty($title) ? 1 : 0,
-                'contextual_filter' => isset($defaultDisplay['display_options']['arguments']) && count($defaultDisplay['display_options']['arguments']) ? 1 : 0
-              ];
-
-              $fields = isset($display->display['display_options']['fields']) ? $display->display['display_options']['fields'] : [];
-              // Copy field list form default display when possible.
-              if (count($fields) == 0  && $display->options['style']['type'] == 'default') {
-                $fields = $defaultDisplay['display_options']['fields'];
-              }
-              foreach ($fields as $k => $field) {
-                $handler = $executable_view->display_handler->getHandler('field', $field['id']);
-                if (empty($handler)) {
-                  $field_name = t('Broken/missing handler: @table > @field', [
-                    '@table' => $field['table'],
-                    '@field' => $field['field'],
-                  ]);
-                }
-                else {
-                  $field_name = Html::escape($handler->adminLabel(TRUE));
-                }
-
-                if (!empty($field['relationship']) && !empty($relationships[$field['relationship']])) {
-                  $field_name = '(' . $relationships[$field['relationship']] . ') ' . $field_name;
-                }
-                $fields[$k] = $field_name;
-              }
-              $cms_view_elements_settings[$key]['use_fields'] = (count($fields) > 1) ? 1 : 0;
-              $cms_view_elements_settings[$key]['field_list'] = $fields;
-
-              if (!empty($display->display['display_options']['pager'])) {
-                $pager = $display->display['display_options']['pager'];
-                $cms_view_elements_settings[$key]['pager'] = [
-                  'items_per_page' => !empty($pager['options']['items_per_page']) ? $pager['options']['items_per_page'] : NULL,
-                  'offset' => !empty($pager['options']['offset']) ? $pager['options']['offset'] : NULL,
-                ];
-              }
-              elseif (!empty($cms_view_elements_settings['az_view-' . $view->id() . '-default']['pager'])) {
-                $cms_view_elements_settings[$key]['pager'] = $cms_view_elements_settings['az_view-' . $executable_view->id() . '-default']['pager'];
+            foreach ($fields as $k => $field) {
+              $handler = $executable_view->display_handler->getHandler('field', $field['id']);
+              if (empty($handler)) {
+                $field_name = t('Broken/missing handler: @table > @field', [
+                  '@table' => $field['table'],
+                  '@field' => $field['field'],
+                ]);
               }
               else {
-                $cms_view_elements_settings[$key] = [
-                  'items_per_page' => NULL,
-                  'offset' => NULL,
-                ];
+                $field_name = Html::escape($handler->adminLabel(TRUE));
               }
+
+              if (!empty($field['relationship']) && !empty($relationships[$field['relationship']])) {
+                $field_name = '(' . $relationships[$field['relationship']] . ') ' . $field_name;
+              }
+              $fields[$k] = $field_name;
+            }
+            $cms_view_elements_settings[$key]['use_fields'] = (count($fields) > 1) ? 1 : 0;
+            $cms_view_elements_settings[$key]['field_list'] = $fields;
+
+            if (!empty($display->display['display_options']['pager'])) {
+              $pager = $display->display['display_options']['pager'];
+              $cms_view_elements_settings[$key]['pager'] = [
+                'items_per_page' => !empty($pager['options']['items_per_page']) ? $pager['options']['items_per_page'] : NULL,
+                'offset' => !empty($pager['options']['offset']) ? $pager['options']['offset'] : NULL,
+              ];
+            }
+            elseif (!empty($cms_view_elements_settings['az_view-' . $view->id() . '-default']['pager'])) {
+              $cms_view_elements_settings[$key]['pager'] = $cms_view_elements_settings['az_view-' . $executable_view->id() . '-default']['pager'];
+            }
+            else {
+              $cms_view_elements_settings[$key] = [
+                'items_per_page' => NULL,
+                'offset' => NULL,
+              ];
             }
           }
         }
@@ -647,12 +703,13 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
         if ($this->moduleHandler->moduleExists('views')) {
           $views = Views::getAllViews();
           foreach ($views as $view) {
-            if ($view->status()) {
-              $executable_view = Views::getView($view->id());
-              $executable_view->initDisplay();
-              foreach ($executable_view->displayHandlers as $display_id => $display) {
-                $cms_views_tags['az_view-' . $executable_view->id() . '-' . $display_id] = $executable_view->id();
-	          }
+            if (!$view->status()) {
+              continue;
+            }
+            $executable_view = Views::getView($view->id());
+            $executable_view->initDisplay();
+            foreach ($executable_view->displayHandlers as $id => $display) {
+              $cms_views_tags['az_view-' . $executable_view->id() . '-' . $id] = $executable_view->id();
             }
           }
         }
@@ -683,7 +740,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
       else {
         $button_styles = [];
 
-        $glazed_element_buttons_folders = [dirname(__FILE__) . DIRECTORY_SEPARATOR . 'glazed_elements/Buttons'];
+        $glazed_element_buttons_folders = [$this->getModulePath() . DIRECTORY_SEPARATOR . 'glazed_elements/Buttons'];
         $this->moduleHandler->alter('glazed_builder_element_buttons_folders', $glazed_element_buttons_folders);
 
         $elements = [];
@@ -713,7 +770,6 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
         $this->cacheBackend->set('glazed_builder:button_styles', $button_styles);
       }
     }
-
     return $button_styles;
   }
 
@@ -806,7 +862,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
     $this->stripScriptsAndStylesheetsFromContent($doc, $response);
     $this->parseDocumentForTemplateLibrary($doc, $response);
     $this->parseDocumentForCmsElements($doc, $response);
-	$this->getValueFromDoc($doc, $response);
+    $this->getValueFromDoc($doc, $response);
   }
 
   /**

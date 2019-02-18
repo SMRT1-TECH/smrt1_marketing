@@ -10,7 +10,7 @@ var glazedMenuState = '';
 Drupal.behaviors.fullScreenSearch = {
     attach: function(context, settings) {
         function clearSearchForm() {
-            $searchForm.toggleClass("hidden"),
+            $searchForm.toggleClass("invisible"),
             $('body').toggleClass("body--full-screen-search"),
             setTimeout(function() {
                 $searchFormInput.val("")
@@ -22,7 +22,7 @@ Drupal.behaviors.fullScreenSearch = {
           , escapeCode = 27;
         $searchButton.on("touchstart click", function(event) {
             event.preventDefault(),
-            $searchForm.toggleClass("hidden"),
+            $searchForm.toggleClass("invisible"),
             $('body').toggleClass("body--full-screen-search"),
             $searchFormInput.focus()
         }),
@@ -30,7 +30,7 @@ Drupal.behaviors.fullScreenSearch = {
             $($searchButton.target).hasClass("search-query") || clearSearchForm()
         }),
         $(document).keydown(function(event) {
-            event.which === escapeCode && !$searchForm.hasClass("hidden") && clearSearchForm()
+            event.which === escapeCode && !$searchForm.hasClass("invisible") && clearSearchForm()
         })
     }
 }
@@ -78,6 +78,16 @@ Drupal.behaviors.glazed = {
         .once('glazed')
         .removeClass('col-sm-12')
         .addClass('col-sm-8 col-md-offset-1');
+
+    // Messages, position absolutely when overlay header and no page title
+    if (($('.wrap-messages').length > 0)
+      && ($('.glazed-header--overlay').length > 0)
+      && ($('#page-title').length == 0))
+    $('.wrap-messages', context).css({
+      'position' : 'absolute',
+      'z-index' : '9999',
+      'right' : '0',
+    });
 
     // Breadcrumbs
     $('.breadcrumb a', context)

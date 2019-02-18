@@ -1,8 +1,10 @@
 <?php
 
+
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+
 
 /**
  * @file
@@ -151,6 +153,9 @@ function glazed_builder_module_preuninstall($module) {
  *
  * We side-load our own selection.js script to close the Media Modal and trigger
  * the "entities-selected" event on the correct image parameter input field.
+ *
+ * Remove modal libraries from bootstrap basetheme
+ * @see https://www.drupal.org/project/bootstrap/issues/3014248
  */
 function glazed_builder_library_info_alter(&$libraries, $extension) {
   if ($extension == 'entity_browser') {

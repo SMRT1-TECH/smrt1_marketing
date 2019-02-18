@@ -664,7 +664,7 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
 
     $templates = array();
     while ($template = $result->fetchAssoc()) {
-      $templates[] = $template['name'];
+      $templates[] = htmlspecialchars($template['name']);
     }
 
     return new JsonResponse($templates);

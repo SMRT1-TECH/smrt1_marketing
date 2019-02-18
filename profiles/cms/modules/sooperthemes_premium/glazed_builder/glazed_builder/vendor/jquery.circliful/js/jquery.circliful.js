@@ -43,7 +43,7 @@
 
                 if (obj.data('icon') != undefined) {
                     icon = $('<i></i>')
-                        .addClass('fa ' + $(this).data('icon'))
+                        .addClass($(this).data('icon'))
                         .css({
                             'color': customSettingsObj.iconcolor,
                             'font-size': customSettingsObj.iconsize
@@ -141,7 +141,7 @@
                     quart = Math.PI / 0.996;
                 }
             }
-            
+
             if ($(this).data('type') != undefined) {
                 type = $(this).data('type');
 

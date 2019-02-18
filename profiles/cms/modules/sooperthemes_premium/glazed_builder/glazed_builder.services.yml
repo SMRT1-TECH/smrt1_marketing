@@ -38,3 +38,7 @@ services:
 
   glazed_builder.file.upload:
     class: '%glazed_builder.file.upload.class%'
+
+  glazed_builder.profile_handler:
+    class: Drupal\glazed_builder\Service\Handler\ProfileHandler
+    arguments: ['@context.repository', '@plugin.manager.block']

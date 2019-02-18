@@ -32,8 +32,9 @@ class FullScreenSearchBlock extends BlockBase {
       $search_form['keys']['#attributes']['class'][] = 'search-query';
       unset($search_form['keys']['#field_suffix']); // Unset submit button, we search when pressing return
       $search_form['keys']['#input_group_button'] = FALSE; // remove .input-group wrapper
-      $search_form['#attributes']['class'][] = 'hidden';
+      $search_form['#attributes']['class'][] = 'invisible';
       $search_form['#attributes']['class'][] = 'full-screen-search-form';
+      $search_form['#attributes']['class'][] = 'invisible';
       // Search screen toggle button
       $content['full_screen_search_button'] = [
         '#type' => 'button',

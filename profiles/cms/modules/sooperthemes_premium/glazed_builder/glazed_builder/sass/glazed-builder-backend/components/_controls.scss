@@ -119,6 +119,12 @@
       top: 0;
     }
 }
+.glazed-editor .az-element.az-toggle > .controls {
+  left: 30px; // Make space for toggle title clicks
+}
+.glazed-editor .az-element--controls-show-parent {
+  margin-top: 0 !important; // fix bug with controls being impossible to click
+}
 
 // Not just Clearfix, "." makes it a collapsing margin breaker
 .az-container:before,
@@ -157,16 +163,13 @@
 }
 .az-container > .controls > .control:first-child {
   width: 41px;
-  background: #0180ef url("../images/glazed-builder-logo.png") no-repeat scroll -21px 50% / 368% auto;
+  background: #0180ef url("../images/glazed-logo-white.svg") no-repeat scroll center center / 100% auto;
   cursor: default;
   position: relative;
   text-indent: -99999px;
   overflow: hidden;
-  transition: width .2s ease-out .6s, background .2s ease-out .6s;
   &:hover {
-    width: 100px;
-    background: #0180ef url('../images/glazed-builder-logo.png') no-repeat center center / 54px;
-    background-size: 80%;
+    background: #0180ef url("../images/glazed-logo-white.svg") no-repeat scroll center center / 100% auto;
   }
 }
 

@@ -37,13 +37,11 @@ function hook_glazed_builder_classes(&$glazed_classes) {
  *   Array of arrays with each child array defining a folder path and URL.
  *
  */
-function hook_glazed_builder_elements_folders(&$glazed_elements_folders) {
+function hook_glazed_builder_elements_folders_alter(&$glazed_elements_folders) {
   $base_url = \Drupal::service('glazed_builder.service')->getBaseUrl();
   $glazed_elements_folders[] = array(
-    array(
-      'folder' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'elements',
-      'folder_url' => $base_url . '/' . drupal_get_path('module', 'mymodule') . '/' . 'elements',
-    ),
+    'folder' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'elements',
+    'folder_url' => $base_url . '/' . drupal_get_path('module', 'mymodule') . '/' . 'elements',
   );
 }
 

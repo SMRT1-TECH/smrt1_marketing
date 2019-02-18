@@ -4,6 +4,7 @@
   input[type=text],
   input[type=search],
   select,
+  select.form-control,
   option,
   .chosen-container-single .chosen-single {
     border: none;
@@ -11,11 +12,14 @@
     box-shadow: none;
     height: auto;
     padding: 6px;
-    background: #f6f6fb;
+    background-color: #f6f6fb;
     outline: none;
     border-radius: 4px;
     &:focus {
       outline: none;
+    }
+    select {
+      height: 2em;
     }
   }
   .form-group {

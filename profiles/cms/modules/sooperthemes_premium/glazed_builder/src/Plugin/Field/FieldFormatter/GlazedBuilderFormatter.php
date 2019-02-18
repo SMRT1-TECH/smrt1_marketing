@@ -2,7 +2,10 @@
 
 namespace Drupal\glazed_builder\Plugin\Field\FieldFormatter;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\CsrfTokenGenerator;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\Entity;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -16,6 +19,8 @@ use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
+use Drupal\glazed_builder\Entity\GlazedBuilderProfile;
+use Drupal\glazed_builder\GlazedBuilderProfileInterface;
 use Drupal\glazed_builder\Service\GlazedBuilderServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -183,20 +188,30 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $element = [];
 
+    $config = $this->configFactory->get('glazed_builder.settings');
+
     $entity_type = $this->fieldDefinition->get('entity_type');
     $bundle = $this->fieldDefinition->get('bundle');
     $entity = $items->getEntity();
     $id = $entity->id();
     $field_name = $this->fieldDefinition->get('field_name');
+    $entity_label = $entity->label();
 
     foreach ($items as $delta => $item) {
       $value = $item->value;
-
       $element[$delta] = [];
+      if ($item->getLangcode()) {
+        $langcode = $item->getLangcode();
+      }
+      else {
+        $langcode = $this->languageManager->getCurrentLanguage()->getId();
+      }
+      $human_readable = base64_encode(Html::escape($field_name . ' on ' . str_replace('node', 'page', $entity_type) . ' \'' . $entity_label . '\''));
+      $attrs = 'class="az-element az-container glazed" data-az-type="' . $entity_type . '|' . $bundle . '" data-az-name="' . $id . '|' . $field_name . '" data-az-human-readable="' . $human_readable . '" data-az-langcode="' . $langcode . '"';
       preg_match('/^\s*\<[\s\S]*\>\s*$/', $value, $html_format);
 
       if (empty($html_format)) {
-        $output = '<div class="az-element az-container glazed" data-az-type="' . $entity_type . '|' . $bundle . '" data-az-name="' . $id . '|' . $field_name . '" style="display:none"></div>';
+        $output = '<div ' . $attrs . ' style="display:none"></div>';
         $mode = 'static';
       }
       else {
@@ -213,12 +228,11 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
         foreach ($settings as $key => $setting) {
           $element[$delta]['#attached']['drupalSettings'][$key] = $setting;
         }
-
-        $output = '<div class="az-element az-container glazed" data-az-type="' . $entity_type . '|' . $bundle . '" data-az-name="' . $id . '|' . $field_name . '" data-az-mode="' . $mode . '">' . $output . '</div>';
+        $output = '<div ' . $attrs . ' data-az-mode="' . $mode . '">' . $output . '</div>';
 
         // Glazed Builder 1.1.0 Experimental feature: Process Text Format Filters for non-editors ~Jur 15/06/16
         // Don't run text format filters when editor is loaded because the editor would save all filter output into the db
-        if (!$this->currentUser->hasPermission('edit via glazed builder') && $this->configFactory->get('glazed_builder.settings')->get('format_filters')) {
+        if (!$this->currentUser->hasPermission('edit via glazed builder') && $config->get('format_filters')) {
           $build = [
             '#type' => 'processed_text',
             '#text' => $output,
@@ -238,7 +252,15 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
       $this->attachAssets($element[$delta], $value, $html_format, $enable_editor, $mode, $this->languageManager->getCurrentLanguage()->getId());
     }
 
-    $element['#cache']['contexts'] = ['url.path'];
+    $element['#cache']['contexts'] = ['url'];
+    $element['#cache']['tags'] = $config->getCacheTags();
+
+    $profile = GlazedBuilderProfile::loadByRoles($this->currentUser->getRoles());
+    if ($profile) {
+      $profile_settings = \Drupal::service('glazed_builder.profile_handler')->buildSettings($profile);
+      $element['#attached']['drupalSettings']['glazedBuilder']['profile'] = $profile_settings;
+      $element['#cache']['tags'] = Cache::mergeTags($element['#cache']['tags'], $profile->getCacheTags());
+    }
 
     return $element;
   }
@@ -263,6 +285,7 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
    */
   function attachAssets(&$element, $content, $html_format, $enable_editor, $mode, $glazed_lang) {
     $base_url = $this->getBaseUrl();
+    $config = $this->configFactory->get('glazed_builder.settings');
 
     $settings = [];
     $settings['currentPath'] = $this->currentPathStack->getPath();
@@ -280,7 +303,7 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
 
     $element['#attached']['library'][] = 'glazed_builder/core';
     if ($mode == 'dynamic') {
-      if ($this->configFactory->get('glazed_builder.settings')->get('development')) {
+      if ($config->get('development')) {
         $element['#attached']['library'][] = 'glazed_builder/editor.frontend_dev';
       }
       else {
@@ -288,14 +311,14 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
       }
     }
 
-    if ($this->configFactory->get('glazed_builder.settings')->get('development')) {
+    if ($config->get('development')) {
       $settings['glazedDevelopment'] = TRUE;
     }
 
-    if ($this->configFactory->get('glazed_builder.settings')->get('bootstrap') == 1) {
+    if ($config->get('bootstrap') == 1) {
       $element['#attached']['library'][] = 'glazed_builder/bootstrap_full';
     }
-    elseif ($this->configFactory->get('glazed_builder.settings')->get('bootstrap') == 2) {
+    elseif ($config->get('bootstrap') == 2) {
       $element['#attached']['library'][] = 'glazed_builder/bootstrap_light';
     }
 
@@ -308,7 +331,7 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
       }
     }
 
-    $settings['mediaBrowser'] = $this->configFactory->get('glazed_builder.settings')->get('media_browser') ;
+    $settings['mediaBrowser'] = $config->get('media_browser') ;
     if ($settings['mediaBrowser'] != '') {
       // Attach Entity Browser Configurations and libraries
       $element['#attached']['drupalSettings']['entity_browser'] = [
@@ -333,7 +356,6 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
     }
 
     $element['#attached']['drupalSettings']['glazedBuilder'] = $settings;
-
   }
 
   /**
@@ -374,4 +396,5 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
 
     return color_get_palette($default_theme);
   }
+
 }

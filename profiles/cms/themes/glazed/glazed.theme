@@ -70,10 +70,6 @@ function glazed_preprocess_html(&$variables) {
   $variables['page_bottom']['custom_javascript'] = [
     '#markup' => '<div class="hidden" id="glazed-js-seed">sfy39587stp16</div>',
   ];
-
-  if (\Drupal::currentUser()->hasPermission('Use the administration toolbar')) {
-    $variables['#attached']['library'][] = 'glazed/admin';
-  }
 }
 
 /**
@@ -111,5 +107,7 @@ use Drupal\block\Entity\Block;
  */
 function glazed_preprocess_block(&$variables) {
   $block = Block::load($variables['elements']['#id']);
-  $variables['region'] = $block->getRegion();
+  if ($block) {
+    $variables['region'] = $block->getRegion();
+  }
 }

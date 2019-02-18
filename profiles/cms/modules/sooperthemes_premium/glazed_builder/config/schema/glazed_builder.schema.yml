@@ -1,17 +1,52 @@
-glazed_builder.settings:
-  type: mapping
-  label: 'Glazed Builder settings'
+glazed_builder.glazed_builder_profile.*:
+  type: config_entity
+  label: Glazed Builder Profile
   mapping:
-    bootstrap:
-      type: integer
-      label: 'Bootstrap asset load level for glazed builder'
-    media_browser:
+    id:
       type: string
-      label: 'Entity Browser for image resusability in Glazed builder editor'
-    development:
-      type: boolean
-      label: 'Whether or not the glazed builder is in development mode'
-    format_filters:
-      type: boolean
-      label: 'Process Text Format Filters on Frontend Builder content'
-
+      label: ID
+    label:
+      type: label
+      label: Label
+    uuid:
+      type: string
+      label: UUID
+    weight:
+      type: integer
+      label: Weight
+    roles:
+      type: sequence
+      label: Roles
+      sequence:
+        type: string
+        label: Role
+    elements:
+      type: sequence
+      label: Elements
+      sequence:
+        type: string
+        label: Element
+    blocks:
+      type: sequence
+      label: Blocks
+      sequence:
+        type: string
+        label: Blocks
+    views:
+      type: sequence
+      label: Views
+      sequence:
+        type: string
+        label: View
+    inline_buttons:
+      type: sequence
+      label: Inline buttons
+      sequence:
+        type: string
+        label: Button
+    modal_buttons:
+      type: sequence
+      label: Modal buttons
+      sequence:
+        type: string
+        label: Button

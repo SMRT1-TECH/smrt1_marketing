@@ -52,9 +52,11 @@
       }
       $input.trigger('change');
       parent.jQuery(parent.document).find('#az-media-modal').remove();
+      $input.removeAttr('data-uuid');
     }).fail(function(data) {
       alert(Drupal.t('Image selection failed, please make sure to select only image files'));
       parent.jQuery(parent.document).find('#az-media-modal').remove();
+      $input.removeAttr('data-uuid');
     });
   }
 

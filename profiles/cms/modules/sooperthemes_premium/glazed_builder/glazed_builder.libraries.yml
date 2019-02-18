@@ -124,7 +124,7 @@ elements.ytplayer:
   version: VERSION
   css:
     theme:
-      vendor/jquery.mb.YTPlayer/dist/css/jquery.mb.YTPlayer.min.css: { minified: true }
+      glazed_builder/vendor/jquery.mb.YTPlayer/dist/css/jquery.mb.YTPlayer.min.css: { minified: true }
   js:
     glazed_builder/vendor/jquery.mb.YTPlayer/dist/jquery.mb.YTPlayer.min.js: { minified: true }
 
@@ -279,3 +279,9 @@ elements.timeline:
   css:
     theme:
       css/elements/timeline.css: { minified: true }
+
+configuration.profileform:
+  css:
+    theme:
+      css/profile-form.css: {}
+      glazed_builder/vendor/ckeditor/skins/moono-lisa/editor.css: {}

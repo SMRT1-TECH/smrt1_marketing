@@ -165,8 +165,6 @@
     thumbnailContainer = $(this).parent().parent();
     imageList = thumbnailContainer.parent();
     selectElement = thumbnailContainer.parent().siblings("select:first");
-    // Clear out the existing image
-    thumbnailContainer.parent().siblings(".form-control:first").val("");
     // Unset the currently selected image style
     selectElement.find("option[selected='selected']").removeAttr("selected");
     // Set the new image style
@@ -177,6 +175,9 @@
     if (!imageList.children("li:first").length) {
       hideImageStyleControls(imageList.siblings(".form-control:first"));
     }
+
+    sortFilenames(imageList, ',');
+
   }
 
   /**
@@ -300,7 +301,6 @@
             var currentImages = getUrlsFromInput(input, delimiter);
 
             currentImages.push(url);
-            console.log(currentImages);
             input.val(currentImages.join(delimiter));
 	      }
 	      else {

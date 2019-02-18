@@ -1,10 +1,10 @@
 name: Glazed Builder Block Type
-description: Bean Block Type with Glazed Builder Drag and Drop Editing
+description: Block type with Glazed Builder drag and drop solution.
 core: 8.x
 type: module
-package: Glazed Builder
+package: Sooperthemes
 
 dependencies:
-  - text
-  - node
-  - glazed_builder
+  - drupal:text
+  - drupal:node
+  - glazed_builder:glazed_builder

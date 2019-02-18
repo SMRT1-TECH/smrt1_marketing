@@ -121,14 +121,16 @@ function glazed_local_webfonts() {
       $font_path = str_replace(drupal_get_path('theme', $theme), '', $file->uri);
       $css = file_get_contents($file->uri);
       if ($css) {
-        preg_match_all('/\'(.*?).svg#(.*?)\'/i', $css, $matches);
+        preg_match_all('/font-family: \'(.*?)\'/i', $css, $matches);
       }
       else {
         drupal_set_message(t('Cannot read font files, please check permissions on the fonts folder in the theme.'), 'error');
       }
-      foreach ($matches[2] as $font) {
-        $key = '1' . $theme . '|' . $font_path . '|' . $font;
-        $fonts[$key] = preg_replace('/(?<!\ ) {A-Z]/', ' $0', $font);
+      foreach ($matches[1] as $font) {
+        if ($font) {
+          $key = '1' . $theme . '|' . $font_path . '|' . $font;
+          $fonts[$key] = preg_replace('/(?<!\ ) {A-Z]/', ' $0', $font);
+        }
       }
     }
   }
@@ -194,8 +196,17 @@ function _glazed_font_previews() {
   $output = '<div class="fonts-previews">';
   $output .= '  <h3>Google fonts preview</h3>';
   $output .= '  <p>Check out <a href="http://www.google.com/webfonts">google.com/webfonts</a> for previews of google web fonts.</p>';
-  $output .= '  <h3>Local fonts note</h3>';
+  $output .= '  <h3>Local fonts preview</h3>';
   $output .= '  <p>Glazed will automatically detect and load any Fontsquirrel-generated @font-face package in the exmapletheme/fonts folder. See <a href="https://www.fontsquirrel.com/tools/webfont-generator">Fontsquirrel.com</a></p>';
+  foreach (glazed_local_webfonts(TRUE) as $key => $font_name) {
+    $font = explode('|', $key);
+    $local_name = $font[2];
+    $output .= '  <div class="font-preview font-local" style="font-family:' . $local_name . '">';
+    $output .= '  <p class="font-name">' . $font_name . '</p><p class="font-test">The quick brown fox jumps over the lazy dog.</p>';
+    $output .= '  <p class="font-test-small">The quick brown fox jumps over the lazy dog.</p>';
+    $output .= '  <p class="font-test-accents">&#36; &euro; &pound; &yen; &agrave; &egrave; &igrave; &ograve; &ugrave; &Agrave; &Egrave; &Igrave; &Ograve; &Ugrave; &aacute; &eacute; &iacute; &oacute; &uacute; &yacute; &Aacute; &Eacute; &Iacute; &Oacute; &Uacute; &Yacute;</p>';
+    $output .= '  </div>';
+  }
   $output .= '</div>';
   return $output;
 }

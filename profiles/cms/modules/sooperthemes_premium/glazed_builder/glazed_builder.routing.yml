@@ -23,13 +23,37 @@ glazed_builder.admin_root:
   requirements:
     _permission: 'administer glazed builder configuration'
 
-glazed_builder.admin_config:
-  path: '/admin/config/content/glazed_builder/config'
+entity.glazed_builder_profile.collection:
+  path: '/admin/config/content/glazed_builder'
   defaults:
-    _controller: 'Drupal\glazed_builder\Controller\PageController::configPage'
-    _title: 'Glazed Builder Configuration'
+    _entity_list: 'glazed_builder_profile'
+    _title: 'Glazed Builder Profile configuration'
   requirements:
-    _permission: 'administer glazed builder configuration'
+    _permission: 'administer glazed_builder_profile'
+
+entity.glazed_builder_profile.add_form:
+  path: '/admin/config/content/glazed_builder/profile/add'
+  defaults:
+    _entity_form: 'glazed_builder_profile.add'
+    _title: 'Add a glazed builder profile'
+  requirements:
+    _permission: 'administer glazed_builder_profile'
+
+entity.glazed_builder_profile.edit_form:
+  path: '/admin/config/content/glazed_builder/profile/{glazed_builder_profile}'
+  defaults:
+    _entity_form: 'glazed_builder_profile.edit'
+    _title: 'Edit a glazed builder profile'
+  requirements:
+    _permission: 'administer glazed_builder_profile'
+
+entity.glazed_builder_profile.delete_form:
+  path: '/admin/config/content/glazed_builder/profile/{glazed_builder_profile}/delete'
+  defaults:
+    _entity_form: 'glazed_builder_profile.delete'
+    _title: 'Delete a glazed builder profile'
+  requirements:
+    _permission: 'administer glazed_builder_profile'
 
 glazed_builder.admin_uninstall:
   path: '/admin/config/content/glazed_builder/uninstall'

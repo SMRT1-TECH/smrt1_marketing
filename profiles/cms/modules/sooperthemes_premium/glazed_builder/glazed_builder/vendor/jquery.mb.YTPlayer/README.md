@@ -2,6 +2,8 @@
 
 __An open source jQuery component to easily build your custom Youtube® player or to use a Youtube® video as background for your page.__
 
+[![](https://data.jsdelivr.com/v1/package/npm/jquery.mb.ytplayer/badge)](https://www.jsdelivr.com/package/npm/jquery.mb.ytplayer)
+
 ![mb.YTPlayer](http://pupunzi.open-lab.com/wp-content/uploads/2010/06/DSC03762.jpg)
 
 ## [go to the demo](http://pupunzi.com/#mb.components/mb.YTPlayer/YTPlayer.html)
@@ -10,3 +12,7 @@ __An open source jQuery component to easily build your custom Youtube® player o
 
 
 [jquery.mb.components](http://pupunzi.com/), another way of thinking the web
+
+
+## Now available also for **Vimeo**: 
+https://github.com/pupunzi/jQuery.mb.vimeo_player

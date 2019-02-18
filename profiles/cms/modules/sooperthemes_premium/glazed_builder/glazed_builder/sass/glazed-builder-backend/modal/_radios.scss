@@ -2,7 +2,7 @@
 
 .modal.glazed {
     // FLAT DESIGN FORM RADIOS
-  .form-radios {
+  .gb-form-radios {
     padding: 0;
     background: #fff;
     float: left;
@@ -18,7 +18,7 @@
       display: table;
       clear: both;
     }
-    .form-type-radio {
+    .form-type-gb-radio {
       &:before {
         content: " ";
         display: table;

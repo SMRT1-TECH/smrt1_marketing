@@ -1,30 +1,25 @@
-/*___________________________________________________________________________________________________________________________________________________
- _ jquery.mb.components                                                                                                                             _
- _                                                                                                                                                  _
- _ file: YTPlayer.css                                                                                                                               _
- _ last modified: 19/04/15 17.35                                                                                                                    _
- _                                                                                                                                                  _
- _ Open Lab s.r.l., Florence - Italy                                                                                                                _
- _                                                                                                                                                  _
- _ email: matteo@open-lab.com                                                                                                                       _
- _ site: http://pupunzi.com                                                                                                                         _
- _       http://open-lab.com                                                                                                                        _
- _ blog: http://pupunzi.open-lab.com                                                                                                                _
- _ Q&A:  http://jquery.pupunzi.com                                                                                                                  _
- _                                                                                                                                                  _
- _ Licences: MIT, GPL                                                                                                                               _
- _    http://www.opensource.org/licenses/mit-license.php                                                                                            _
- _    http://www.gnu.org/licenses/gpl.html                                                                                                          _
- _                                                                                                                                                  _
- _ Copyright (c) 2001-2015. Matteo Bicocchi (Pupunzi);                                                                                              _
- ___________________________________________________________________________________________________________________________________________________*/
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ jquery.mb.components
 
+ file: jquery.mb.YTPlayer.css
+ last modified: 13/02/18 21.41
+ Version:  {{ version }}
+ Build:  {{ buildnum }}
 
-/**
-* version: {{ version }}
-*/
+ Open Lab s.r.l., Florence - Italy
+ email:  matteo@open-lab.com
+ blog: 	http://pupunzi.open-lab.com
+ site: 	http://pupunzi.com
+ 	http://open-lab.com
 
-@charset"UTF-8";
+ Licences: MIT, GPL
+ http://www.opensource.org/licenses/mit-license.php
+ http://www.gnu.org/licenses/gpl.html
+
+ Copyright (c) 2001-2018. Matteo Bicocchi (Pupunzi)
+ :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+
+@charset "UTF-8";
 @font-face {
     font-family: 'ytpregular';
     src: url('font/ytp-regular.eot');
@@ -41,7 +36,7 @@
     outline: 0;
 }
 
-.mbYTP_wrapper {
+.YTPWrapper {
     display: block;
     transform: translateZ(0) translate3d(0, 0, 0);
     transform-style: preserve-3d;
@@ -91,20 +86,56 @@
     }
 }
 
-.fullscreen {
-    display: block!important;
-    position: fixed!important;
-    width: 100%!important;
-    height: 100%!important;
-    top: 0!important;
-    left: 0!important;
-    margin: 0!important;
+.YTPFullscreen {
+    display: block !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
     border: none !important;
     opacity: 1 !important;
+    background-color: #000 !important;
+    ;
+    padding: 0 !important;
+}
+
+.inlinePlayButton {
+  font-family: 'ytpregular';
+  font-size: 45px;
+  color: #ffffff;
+  text-align: center;
+  border-radius: 100%;
+  background-color: rgba(0,0,0,.4);
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  cursor: pointer;
+  opacity: .8;
+  transition: all .4s;
+  transform: scale(1.3);
+
+}
+
+.mb_YTPlayer:hover .inlinePlayButton {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.inlinePlayButton:hover {
+  background-color: rgba(0,0,0,1);
+  transform: scale(1.3)!important;
 }
 
 .mbYTP_wrapper iframe {
-    max-width: 4000px !important;
+    max-width: 8000px !important;
 }
 
 .inline_YTPlayer {
@@ -119,10 +150,10 @@
 }
 
 .inline_YTPlayer img {
-    border: none!important;
-    margin: 0!important;
-    padding: 0!important;
-    transform: none!important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
 }
 
 
@@ -163,12 +194,13 @@
 .mb_YTPBar .buttonBar {
     transition: all .5s;
     background: transparent;
-    font: 12px/14px Calibri;
+    font: 12px/14px san-serif;
     position: absolute;
     top: -30px;
     left: 0;
     padding: 5px;
     width: 100%;
+    height: 40px;
     box-sizing: border-box;
 }
 
@@ -178,7 +210,7 @@
 
 .mb_YTPBar span {
     display: inline-block;
-    font: 16px/20px Calibri, sans-serif;
+    font: 16px/20px sans-serif;
     position: relative;
     width: 30px;
     height: 25px;
@@ -216,8 +248,8 @@
     color: white;
 }
 
-.mb_YTPBar .mb_YTPPlaypause,
-.mb_YTPlayer .mb_YTPBar .mb_YTPPlaypause img {
+.mb_YTPBar .mb_YTPPlayPause,
+.mb_YTPlayer .mb_YTPBar .mb_YTPPlayPause img {
     cursor: pointer;
 }
 
@@ -246,7 +278,7 @@
 .mb_YTPBar .mb_YTPseekbar {
     height: 10px;
     width: 0;
-    background: #000;
+    background: #bb110e;
     bottom: 0;
     left: 0;
     box-shadow: rgba(82, 82, 82, 0.47) 1px 1px 3px;
@@ -258,7 +290,6 @@
     -webkit-transform-style: "flat";
     box-sizing: border-box;
 }
-
 
 /*RASTER OVERLAY*/
 
@@ -295,6 +326,10 @@
 
 .mb_YTPBar.compact .simpleSlider {
     width: 40px;
+}
+
+.mb_YTPBar.compact span.mb_OnlyYT {
+  left: 260px;
 }
 
 .mb_YTPBar .simpleSlider.muted {

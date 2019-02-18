@@ -15,8 +15,8 @@ config:
     - field.storage.node.field_glazed_main_content_width
     - field.storage.node.field_glazed_page_layout
     - field.storage.node.field_glazed_page_title_backgrou
-# Information added by Drupal.org packaging script on 2018-02-20
-version: '8.x-1.0'
+# Information added by Drupal.org packaging script on 2018-09-10
+version: '8.x-1.1'
 core: '8.x'
 project: 'glazed_helper'
-datestamp: 1519125484
+datestamp: 1536585783

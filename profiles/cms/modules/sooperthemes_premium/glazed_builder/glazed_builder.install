@@ -1,5 +1,10 @@
 <?php
 
+use Drupal\Component\Utility\Html;
+use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
+use Drupal\Component\Serialization\Json;
+
 /**
  * @file
  * Install, update, uninstall and schema functions for the module.
@@ -17,6 +22,40 @@ function glazed_builder_install() {
   // Install page templates
   module_load_include('inc', 'glazed_builder', 'glazed_builder.templates');
   glazed_set_page_templates();
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function glazed_builder_requirements($phase) {
+  $requirements = [];
+  $result = FALSE;
+  $domain = Html::escape(\Drupal::request()->getHost());
+  try {
+    $result = \Drupal::httpClient()->request('GET', 'https://www.sooperthemes.com/api/domain-status/' . $domain);
+  }
+  catch (RequestException $e) {
+    watchdog_exception('glazed_builder', $e);
+  }
+
+  $requirements['glazed_builder_domain_status'] = [
+    'title' => t('Glazed Builder License Status'),
+    'description' => t('Cannot connect to sooperthemes.com license server, license status unknown'),
+    'severity' => REQUIREMENT_INFO,
+    'value' => t('License'),
+  ];
+  if ($result instanceof ResponseInterface && $result->getStatusCode() == 200) {
+    $data = Json::decode($result->getBody());
+    if ($data['status'] == 'authorized') {
+      $requirements['glazed_builder_domain_status']['description'] = t('Sooperthemes domain license found');
+      $requirements['glazed_builder_domain_status']['severity'] = REQUIREMENT_OK;
+    }
+    else {
+      $requirements['glazed_builder_domain_status']['description'] = t('%domain domain license not found. Please contact SooperThemes at www.sooperthemes.com/contact to authorize this website. If this environment is stricly for development or testing a license is not required.', ['%domain' => $domain]);
+    }
+  }
+
+  return $requirements;
 }
 
 /**
@@ -96,4 +135,12 @@ function glazed_builder_update_8005() {
   // Update page templates
   module_load_include('inc', 'glazed_builder', 'glazed_builder.templates');
   glazed_set_page_templates();
+}
+
+
+/**
+ * Clear all caches to add new menu items and classes
+ */
+function glazed_builder_update_8006() {
+  drupal_flush_all_caches();
 }

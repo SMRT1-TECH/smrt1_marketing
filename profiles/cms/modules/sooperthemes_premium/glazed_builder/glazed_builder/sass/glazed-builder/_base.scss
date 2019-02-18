@@ -5,8 +5,15 @@
   min-height: 14px;
 }
 
-.az-element {
+.az-element,
+.az-ctnr {
   position: relative;
+  overflow: visible;
+  box-sizing: border-box;
+  &:before,
+  &:after {
+    box-sizing: border-box;
+  }
 }
 
 .az-element .modal-backdrop, .az-element .ax-modal-backdrop {

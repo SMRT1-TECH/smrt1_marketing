@@ -56,6 +56,11 @@ function glazed_form_system_theme_settings_alter(&$form, &$form_state, $form_id 
     require_once($file->uri);
   }
   $form['#attached']['library'][] = 'glazed/admin.themesettings';
+
+  if ((\Drupal::moduleHandler()->moduleExists('color')) && ($palette = color_get_palette($subject_theme))) {
+    $form['#attached']['drupalSettings']['glazedSettings'] = ['palette' => $palette]; // glazedSetting vs glazed namespace otherwise if deletes other .glazed data
+  }
+
   array_unshift($form['#submit'], 'glazed_form_system_theme_settings_submit');
   array_unshift($form['#validate'], 'glazed_form_system_theme_settings_validate');
 }
@@ -79,7 +84,7 @@ function glazed_form_system_theme_settings_validate(&$form, &$form_state) {
         }
         else {
           // File upload failed.
-          $form_state->setErrorByName('page_title_image', $this->t('The logo could not be uploaded.'));
+          $form_state->setErrorByName('page_title_image', t('The logo could not be uploaded.'));
         }
       }
 
@@ -93,7 +98,7 @@ function glazed_form_system_theme_settings_validate(&$form, &$form_state) {
         }
         else {
           // File upload failed.
-          $form_state->setErrorByName('background_image', $this->t('The background image could not be uploaded.'));
+          $form_state->setErrorByName('background_image', t('The background image could not be uploaded.'));
         }
       }
 
@@ -102,13 +107,13 @@ function glazed_form_system_theme_settings_validate(&$form, &$form_state) {
       if ($form_state->getValue('page_title_image_path')) {
         $path = _glazed_validate_path($form_state->getValue('page_title_image_path'));
         if (!$path) {
-          $form_state->setErrorByName('page_title_image_path', $this->t('The custom logo path is invalid.'));
+          $form_state->setErrorByName('page_title_image_path', t('The custom logo path is invalid.'));
         }
       }
       if ($form_state->getValue('background_image_path')) {
         $path = _glazed_validate_path($form_state->getValue('background_image_path'));
         if (!$path) {
-          $form_state->setErrorByName('background_image_path', $this->t('The custom background image path is invalid.'));
+          $form_state->setErrorByName('background_image_path', t('The custom background image path is invalid.'));
         }
       }
 
@@ -126,7 +131,7 @@ function glazed_form_system_theme_settings_validate(&$form, &$form_state) {
       }
       else {
         // File upload failed.
-        $form_state->setErrorByName('page_title_image', $this->t('The logo could not be uploaded.'));
+        $form_state->setErrorByName('page_title_image', t('The logo could not be uploaded.'));
       }
     }
   }

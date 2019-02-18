@@ -574,7 +574,7 @@
 
           'change.bootstrapSwitch': function changeBootstrapSwitch(event, skip) {
             event.preventDefault();
-            event.stopImmediatePropagation();
+            // event.stopImmediatePropagation(); //https://github.com/Bttstrp/bootstrap-switch/issues/687
             var state = _this5.$element.is(':checked');
             _this5._containerPosition(state);
             if (state === _this5.options.state) {
@@ -606,7 +606,7 @@
             }
             if (event.which === 37 || event.which === 39) {
               event.preventDefault();
-              event.stopImmediatePropagation();
+              // event.stopImmediatePropagation();
               _this5.state(event.which === 39);
             }
           }
@@ -699,7 +699,7 @@
         var $externalLabel = this.$element.closest('label');
         $externalLabel.on('click', function (event) {
           event.preventDefault();
-          event.stopImmediatePropagation();
+          // event.stopImmediatePropagation();
           if (event.target === $externalLabel[0]) {
             _this8.toggleState();
           }

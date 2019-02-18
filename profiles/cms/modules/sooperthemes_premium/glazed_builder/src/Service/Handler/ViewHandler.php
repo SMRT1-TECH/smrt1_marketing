@@ -88,7 +88,6 @@ class ViewHandler implements ViewHandlerInterface {
 
       // Exclude some fields.
       if (!empty($data['toggle_fields'])) {
-        // this produces an error undefined method get_option ~Jur 18-01-2018
         $fields = $view->display_handler->getOption('fields');
         $data['toggle_fields'] = explode(',', $data['toggle_fields']);
         foreach ($fields as $k => $i) {

@@ -84,7 +84,6 @@ class BlockHandler implements BlockHandlerInterface {
     else {
       $block = $this->blockManager->createInstance($blockInfo['id'], []);
 
-
       if ($block && $block->access($this->currentUser)) {
 
         $definition = $block->getPluginDefinition();

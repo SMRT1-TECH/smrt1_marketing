@@ -86,7 +86,12 @@ div.modal-dialog {
     }
     .close {
       font-size: 30px;
-      opacity: 0.3;
+      opacity: 1;
+      color: #fff;
+    }
+    .help-link {
+      font-size: 18px;
+      margin: 5px 10px 0 5px;
     }
     img {
       width: 54px;
@@ -104,6 +109,20 @@ div.modal-dialog {
     padding-top: 15px;
   }
   .modal-body {
+    border-left: 30px solid #f6f6fb;
+    position: relative;
+    &:after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: -60px;
+      width: 90px;
+      height: 13px;
+      background: url("../images/sooperthemes.svg") no-repeat center center;
+      background-size: 90px;
+      transform: rotate(-90deg);
+    }
     .help-block,
     .help-inline {
       color: #bbb;
