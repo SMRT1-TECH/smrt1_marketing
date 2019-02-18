@@ -1,5 +1,5 @@
 global-styling:
   css:
     theme:
-      css/glazed_subtheme.css: {}
+      css/glazed_smrt1.css: {}
       css/glazed.css: { minified: true }
