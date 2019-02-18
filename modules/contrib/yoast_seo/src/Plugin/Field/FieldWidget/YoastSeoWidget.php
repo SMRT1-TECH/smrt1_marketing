@@ -92,7 +92,7 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
     $entity_type = $form_display->getTargetEntityTypeId();
     $bundle = $form_display->getTargetBundle();
     $fields = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
-    $text_field_types = ['text_with_summary', 'text_long'];
+    $text_field_types = ['text_with_summary', 'text_long', 'string_long'];
     $text_fields = [];
 
     if (empty($fields)) {
