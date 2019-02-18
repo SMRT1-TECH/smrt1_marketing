@@ -190,7 +190,7 @@ class Portfolio extends StylePluginBase {
 
     $form['display_type_speed'] = [
       '#type' => 'number',
-      '#title' => $this->t('Show animation speed'),
+      '#title' => $this->t('Show animation delay'),
       '#min' => 0,
       '#max' => 99999,
       '#default_value' => $this->options['display_type_speed'],

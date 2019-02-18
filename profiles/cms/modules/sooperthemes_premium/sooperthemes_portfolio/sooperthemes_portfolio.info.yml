@@ -1,7 +1,7 @@
 name: Sooperthemes portfolio
 type: module
-version: 8.x-1.0
-description: Responsive jQuery grid system for smart portfolio grids
+version: 8.x-1.3
+description: Premium portfolio views by Sooperthemes.
 package: Sooperthemes
 project: sooperthemes_portfolio
 project status url: https://www.sooperthemes.com/release-history

@@ -27,7 +27,7 @@ class Portfolio extends ImageFormatter {
     return [
       'image_style' => '',
       'lightbox_image_style' => '',
-      'lightbox_title' => 'image_title',
+      'lightbox_title' => 'image_alt',
     ];
   }
 
