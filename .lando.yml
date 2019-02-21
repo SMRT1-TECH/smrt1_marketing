@@ -1,0 +1,25 @@
+name: smrt-1-marketing
+recipe: drupal8
+config:
+  webroot: .
+
+# Add in a proxy route to phpmyadmin
+proxy:
+  pma:
+    - pma.smrt1.lndo.site
+
+# Add in phpmyadmin
+services:
+
+  # Add a phpmyadmin db frontend
+  pma:
+    # Use the latest version of phpmyadmin
+    type: phpmyadmin
+
+    # The databases you want to look at, this will default to a service called
+    # "database"
+    #
+    # You might want to run `lando info` on your app to see what databases you
+    # have available
+    hosts:
+      - database
