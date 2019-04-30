@@ -2,8 +2,10 @@ name: Glazed CMS
 type: profile
 description: Drupal distribution with production ready CMS features.
 core: 8.x
-version: 7.x-2.6.8
-dependencies:
+version: 8.x-1.0
+install:
+# CMS Core module
+  - cms_core
 # Core modules.
   - automated_cron
   - block
@@ -18,7 +20,9 @@ dependencies:
   - dblog
   - dynamic_page_cache
   - file
+  - field_ui
   - image
+  - menu_ui
   - menu_link_content
   - node
   - options
@@ -27,7 +31,9 @@ dependencies:
   - redirect
   - search
   - taxonomy
+  - update
   - views
+  - views_ui
 # Contributed modules
   - pathauto
   - libraries # this needs to be here to tell Drupal our libraries are in /profiles/cms/libraries and not /libraries

@@ -53,39 +53,39 @@ class TagcloudsAdminPage extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('tagclouds.settings');
-    $options = array(
+    $options = [
       'title,asc' => $this->t('by title, ascending'), 'title,desc' => $this->t('by title, descending'),
       'count,asc' => $this->t('by count, ascending'), 'count,desc' => $this->t('by count, descending'),
       'random,none' => $this->t('random')
-    );
+    ];
     $sort_order = $config->get('sort_order');
-    $form['sort_order'] = array(
+    $form['sort_order'] = [
       '#type' => 'radios',
       '#title' => $this->t('Tagclouds sort order'),
       '#options' => $options,
       '#default_value' => (!empty($sort_order)) ? $sort_order : 'title,asc',
       '#description' => $this->t('Determines the sort order of the tags on the freetagging page.'),
-    );
+    ];
 
-    $options_display = array('style' => $this->t('Display Tags with Style'), 'count' => $this->t('Display Tags with Count'));
+    $options_display = ['style' => $this->t('Display Tags with Style'), 'count' => $this->t('Display Tags with Count')];
     $display_type = $config->get('display_type');
-    $form['display_type'] = array(
+    $form['display_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Tagclouds Display Type'),
       '#options' => $options_display,
       '#default_value' => (!empty($display_type)) ? $display_type : 'style',
       '#description' => $this->t('Determines the style of the page.'),
-    );
+    ];
 
-    $form['display_node_link'] = array(
+    $form['display_node_link'] = [
      '#type' => 'checkbox',
      '#title' => $this->t('Link term to node when only one content is tagged'),
      '#default_value' => $config->get('display_node_link'),
      '#description' => $this->t('When there is only one content tagged with a certain term, link that term to this node instead of the term list page.'),
-    );
+    ];
 
     $page_amount = $config->get('page_amount');
-    $form['page_amount'] = array(
+    $form['page_amount'] = [
       '#type' => 'textfield',
       '#size' => 5,
       '#title' => $this->t('Amount of tags on the pages'),
@@ -93,10 +93,10 @@ class TagcloudsAdminPage extends ConfigFormBase {
       '#description' => $this->t("The amount of tags that will show up in a cloud on the
         pages. Enter '0' to display all tags. Amount of tags in blocks must be
         configured in the block settings of the various cloud blocks."),
-    );
+    ];
 
     $levels = $config->get('levels');
-    $form['levels'] = array(
+    $form['levels'] = [
       '#type' => 'textfield',
       '#size' => 5,
       '#title' => $this->t('Number of levels'),
@@ -104,16 +104,16 @@ class TagcloudsAdminPage extends ConfigFormBase {
       '#description' => $this->t('The number of levels between the least popular
         tags and the most popular ones. Different levels will be assigned a different
         class to be themed in tagclouds.css'),
-    );
+    ];
 
     $lang = $this->languageManager->getLanguages();
     if (count($lang) > 1) {
-      $form['language_separation'] = array(
+      $form['language_separation'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Separation of Tags per language'),
         '#default_value' => $config->get('language_separation'),
         '#description' => $this->t('If you have more than one language installed this setting would allow you to separate the tags for each language.'),
-      );
+      ];
     }
 
     return parent::buildForm($form, $form_state);

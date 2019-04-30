@@ -3,8 +3,11 @@
 namespace Drupal\tagclouds\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\tagclouds\Controller\CsvToArrayTrait;
+use Drupal\tagclouds\CloudBuilder;
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\tagclouds\TagService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller routines for user routes.
@@ -12,6 +15,43 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class TagcloudsListVocs extends ControllerBase {
 
   use CsvToArrayTrait;
+
+  /**
+   * The tag service.
+   *
+   * @var \Drupal\tagclouds\TagService
+   */
+  protected $tagService;
+
+  /**
+   * The cloud builder service.
+   *
+   * @var \Drupal\tagclouds\CloudBuilder
+   */
+  protected $cloudBuilder;
+
+  /**
+   * Constructs a new TagcloudsTermsBlock instance.
+   *
+   * @param \Drupal\tagclouds\TagService $tagService
+   *   The tag service.
+   * @param \Drupal\tagclouds\CloudBuilder $cloudBuilder
+   *   The cloud builder service.
+   */
+  public function __construct(TagService $tagService, CloudBuilder $cloudBuilder) {
+    $this->tagService = $tagService;
+    $this->cloudBuilder = $cloudBuilder;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('tagclouds.tag'),
+      $container->get('tagclouds.cloud_builder')
+    );
+  }
 
   /**
    * Renders a list of vocabularies.
@@ -34,24 +74,19 @@ class TagcloudsListVocs extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    /* @var Drupal\tagclouds\TagServiceInterface $tagService */
-    $tag_service = \Drupal::service('tagclouds.tag');
-
-    /* @var Drupal\tagclouds\CloudBuilder $cloud_builder */
-    $cloud_builder = \Drupal::service('tagclouds.cloud_builder');
     $boxes = [];
     foreach ($vocs as $vid) {
-      $vocabulary = entity_load('taxonomy_vocabulary', $vid);
+      $vocabulary = Vocabulary::load($vid);
 
       if ($vocabulary == FALSE) {
         throw new NotFoundHttpException();
       }
 
       $config = $this->config('tagclouds.settings');
-      $tags = $tag_service->getTags([$vid], $config->get('levels'), $config->get('page_amount'));
-      $sorted_tags = $tag_service->sortTags($tags);
+      $tags = $this->tagService->getTags([$vid], $config->get('levels'), $config->get('page_amount'));
+      $sorted_tags = $this->tagService->sortTags($tags);
 
-      $cloud = $cloud_builder->build($sorted_tags);
+      $cloud = $this->cloudBuilder->build($sorted_tags);
 
       if (!$cloud) {
         throw new NotFoundHttpException();

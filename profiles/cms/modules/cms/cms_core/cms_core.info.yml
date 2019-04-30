@@ -1,19 +1,18 @@
 name: CMS Core
 type: module
-description: Glazed Drupal CMS Core
-package: Glazed Drupal CMS
+description: Glazed Drupal CMS Core.
+package: Sooperthemes
 # core: 8.x
 dependencies:
-  - image
-  - node
-  - contact
-  - file_browser
-  - glazed_helper
-  - libraries
-  - path
-  - pathauto
-  - text
-  - menu_ui
+  - drupal:image
+  - drupal:node
+  - drupal:contact
+  - file_browser:file_browser
+  - glazed_helper:glazed_helper
+  - pathauto:pathauto
+  - drupal:path
+  - drupal:text
+  - drupal:menu_ui
 config:
   install:
     - entity_browser.browser.cms_file_browser
@@ -61,12 +60,12 @@ config:
     - field.field.node.cms_page.field_glazed_main_content_width
     - field.field.node.cms_page.field_glazed_page_layout
     - field.field.node.cms_page.field_glazed_page_title_backgrou
-    - contact.form.cms_contact
+    - drupal:contact.form.cms_contact
     - pathauto.pattern.content
     - views.view.glazed_cms_media_browser
 
-# Information added by Drupal.org packaging script on 2018-02-20
-version: '8.x-1.0'
+# Information added by Drupal.org packaging script on 2019-02-08
+version: '8.x-1.2'
 core: '8.x'
 project: 'cms_core'
-datestamp: 1519122195
+datestamp: 1549630985

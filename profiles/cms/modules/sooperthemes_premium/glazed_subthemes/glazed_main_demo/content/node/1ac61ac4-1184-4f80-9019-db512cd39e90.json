@@ -53,7 +53,7 @@
                 },
                 "uuid": [
                     {
-                        "value": "f27f2c5e-5aaf-4e4b-be09-4cbbde6d5228"
+                        "value": "ad7b3722-8ee8-4f4e-a7ce-225153924d82"
                     }
                 ]
             }
@@ -70,7 +70,7 @@
                 },
                 "uuid": [
                     {
-                        "value": "f27f2c5e-5aaf-4e4b-be09-4cbbde6d5228"
+                        "value": "ad7b3722-8ee8-4f4e-a7ce-225153924d82"
                     }
                 ],
                 "lang": "en"
@@ -130,7 +130,7 @@
     "path": [
         {
             "alias": "\/elements\/media-elements\/pricing-table",
-            "pid": 76,
+            "pid": 78,
             "langcode": "en",
             "lang": "en"
         }

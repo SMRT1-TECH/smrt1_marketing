@@ -17,30 +17,34 @@ use Drupal\Core\Url;
  */
 function glazed_helper_toolbar() {
 
-  $config = \Drupal::config('system.theme');
-  $default_theme = $config->get('default');
+  if (\Drupal::currentUser()->hasPermission('Use the administration toolbar')
+    && \Drupal::currentUser()->hasPermission('Administer themes')) {
 
-  // Create the Glazed Helper toolbar render array.
-  $items['glazedsettings'] = [
-    '#type' => 'toolbar_item',
-    'tab' => [
-      '#type' => 'link',
-      '#title' => t('Theme Settings'),
-      '#url' => Url::fromRoute('system.theme_settings_theme', ['theme' => $default_theme]),
-      '#attributes' => [
-        'title' => t('Glazed Theme Settings'),
-        'class' => ['toolbar-icon', 'toolbar-icon-glazed-helper'],
-      ],
-    ],
-    '#weight' => 99,
-    '#attached' => [
-      'library' => [
-        'glazed_helper/glazed_helper.icons',
-      ],
-    ],
-  ];
+    $config = \Drupal::config('system.theme');
+    $default_theme = $config->get('default');
 
-  return $items;
+    // Create the Glazed Helper toolbar render array.
+    $items['glazedsettings'] = [
+      '#type' => 'toolbar_item',
+      'tab' => [
+        '#type' => 'link',
+        '#title' => t('Theme Settings'),
+        '#url' => Url::fromRoute('system.theme_settings_theme', ['theme' => $default_theme]),
+        '#attributes' => [
+          'title' => t('Glazed Theme Settings'),
+          'class' => ['toolbar-icon', 'toolbar-icon-glazed-helper'],
+        ],
+      ],
+      '#weight' => 99,
+      '#attached' => [
+        'library' => [
+          'glazed_helper/glazed_helper.icons',
+        ],
+      ],
+    ];
+
+    return $items;
+  }
 }
 
 /**

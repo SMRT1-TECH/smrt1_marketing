@@ -1,29 +1,29 @@
-name: CMS blog
+name: CMS Blog
 type: module
-description: Glazed Drupal CMS Blog
-package: Glazed Drupal CMS
+description: Glazed Drupal CMS Blog.
+package: Sooperthemes
 # core: 8.x
 dependencies:
-  - block_class
-  - cms_core
-  - comment
-  - field_formatter_class
-  - field_group
-  - file
-  - file_browser
-  - sooperthemes_gridstack
-  - glazed_helper
-  - image
-  - image_hover_effects
-  - link
-  - node
-  - path
-  - smart_trim
-  - tagclouds
-  - taxonomy
-  - text
-  - views
-  - views_bootstrap
+  - block_class:block_class
+  - cms_core:cms_core
+  - drupal:comment
+  - field_formatter_class:field_formatter_class
+  - field_group:field_group
+  - drupal:file
+  - file_browser:file_browser
+  - sooperthemes_gridstack:sooperthemes_gridstack
+  - glazed_helper:glazed_helper
+  - drupal:image
+  - image_hover_effects:image_hover_effects
+  - drupal:link
+  - drupal:node
+  - drupal:path
+  - smart_trim:smart_trim
+  - tagclouds:tagclouds
+  - drupal:taxonomy
+  - drupal:text
+  - drupal:views
+  - views_bootstrap:views_bootstrap
 config:
   install:
     - comment.type.cms_blog_comments
@@ -74,8 +74,8 @@ default_content:
       - 9fa08225-93a8-48b6-a12c-b3b350ed3e57
       - 08ff365b-2ba3-41e4-ae40-03f1d7879f3a
       - 6ed9d0d7-fbc1-47be-9257-d6ed01cbfc9c
-# Information added by Drupal.org packaging script on 2018-02-20
-version: '8.x-1.0'
+# Information added by Drupal.org packaging script on 2019-02-08
+version: '8.x-1.2'
 core: '8.x'
 project: 'cms_blog'
-datestamp: 1519124000
+datestamp: 1549631000

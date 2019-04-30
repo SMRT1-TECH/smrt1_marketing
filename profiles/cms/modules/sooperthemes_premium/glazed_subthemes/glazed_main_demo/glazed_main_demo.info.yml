@@ -1,19 +1,21 @@
 name: Glazed Main Demo
 type: module
-version: 8.x-1.0-RC3
-description: Glazed Main Demo
+version: 8.x-1.0
+description: Glazed Main Demo by Sooperthemes.
 core: 8.x
-package: Glazed Demos
+package: Sooperthemes
 dependencies:
-  - cms_core
-  - cms_blog
-  - contact
-  - glazed_builder_block
-  - glazed_builder_page
-  - sooperthemes_gridstack
-  - glazed_helper
-  - sooperthemes_portfolio
-  - sooperthemes_portfolio_examples
+  - cms_core:cms_core
+  - cms_blog:cms_blog
+  - cms_events:cms_events
+  - cms_news:cms_news
+  - drupal:contact
+  - glazed_builder_block:glazed_builder_block
+  - glazed_builder_page:glazed_builder_page
+  - sooperthemes_gridstack:sooperthemes_gridstack
+  - glazed_helper:glazed_helper
+  - sooperthemes_portfolio:sooperthemes_portfolio
+  - sooperthemes_portfolio:sooperthemes_portfolio_examples
 config:
   install:
     - glazed.settings

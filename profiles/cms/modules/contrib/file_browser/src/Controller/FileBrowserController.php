@@ -15,7 +15,7 @@ class FileBrowserController extends ControllerBase {
   /**
    * Renders a preview of a file for use with File Browser.
    *
-   * @param FileInterface $file
+   * @param \Drupal\file\FileInterface $file
    *   The requested file.
    * @param string $image_style
    *   (Optional) An image style to preview the (image) file in.
@@ -40,7 +40,7 @@ class FileBrowserController extends ControllerBase {
             ])->toString(),
           ],
         ],
-      ]
+      ],
     ];
 
     $preview = FileBrowserPreview::getFilePreview($file, $image_style);
@@ -51,7 +51,7 @@ class FileBrowserController extends ControllerBase {
         '#options' => image_style_options(),
         '#value' => $image_style,
       ];
-      $build ['image_style']['#options'][''] = $this->t('No image style');
+      $build['image_style']['#options'][''] = $this->t('No image style');
     }
 
     $build['preview'] = $preview;

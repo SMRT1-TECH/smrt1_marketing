@@ -19,11 +19,15 @@ use Drupal\Core\Form\FormStateInterface;
  * of specific entity functionality
  */
 function glazed_builder_entity_type_alter(array &$entity_types) {
-  $node = &$entity_types['node'];
-  $node->setClass('Drupal\glazed_builder\Entity\Node');
+  if (!empty($entity_types['node'])) {
+    $node = &$entity_types['node'];
+    $node->setClass('Drupal\glazed_builder\Entity\Node');
+  }
 
-  $block_content = &$entity_types['block_content'];
-  $block_content->setClass('Drupal\glazed_builder\Entity\BlockContent');
+  if (!empty($entity_types['block_content'])){
+    $block_content = &$entity_types['block_content'];
+    $block_content->setClass('Drupal\glazed_builder\Entity\BlockContent');
+  }
 }
 
 /**

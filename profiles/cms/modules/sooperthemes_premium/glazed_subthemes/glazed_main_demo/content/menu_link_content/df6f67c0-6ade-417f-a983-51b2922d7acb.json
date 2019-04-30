@@ -33,6 +33,11 @@
             "value": "menu_link_content"
         }
     ],
+    "enabled": [
+        {
+            "value": true
+        }
+    ],
     "title": [
         {
             "value": "Home Portfolio 1",
@@ -70,11 +75,6 @@
     "expanded": [
         {
             "value": false
-        }
-    ],
-    "enabled": [
-        {
-            "value": true
         }
     ],
     "parent": [

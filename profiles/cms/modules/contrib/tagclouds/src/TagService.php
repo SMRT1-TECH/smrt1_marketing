@@ -91,7 +91,7 @@ class TagService implements TagServiceInterface {
     // Check if the cache exists.
     $cache_name = 'tagclouds_cache_' . $options;
     $cache = $this->cacheStore->get($cache_name);
-    $tags = array();
+    $tags = [];
     // Make sure cache has data.
     if (!empty($cache->data)) {
       $tags = $cache->data;
@@ -99,14 +99,15 @@ class TagService implements TagServiceInterface {
     else {
 
       if (count($vids) == 0) {
-        return array();
+        return [];
       }
       $config = $this->configFactory->get('tagclouds.settings');
 
-      $query = db_select('taxonomy_term_data', 'td');
+      $query = \Drupal::database()->select('taxonomy_term_data', 'td');
       $query->addExpression('COUNT(td.tid)', 'count');
-      $query->fields('tfd', array('name', 'description__value'));
-      $query->fields('td', array('tid', 'vid'));
+      $query->fields('tfd', ['name', 'description__value']);
+      $query->fields('td', ['tid', 'vid']);
+      $query->addExpression('MIN(tn.nid)', 'nid');
 
       $query->join('taxonomy_index', 'tn', 'td.tid = tn.tid');
       $query->join('node_field_data', 'n', 'tn.nid = n.nid');
@@ -138,7 +139,7 @@ class TagService implements TagServiceInterface {
       }
       $tags = $this->buildWeightedTags($tags, $steps);
 
-      $this->cacheStore->set($cache_name, $tags);
+      $this->cacheStore->set($cache_name, $tags, CacheBackendInterface::CACHE_PERMANENT, ['node_list', 'taxonomy_term_list', 'config:tagclouds.settings']);
     }
 
     return $tags;
@@ -166,7 +167,7 @@ class TagService implements TagServiceInterface {
   private function buildWeightedTags($tags, $steps = 6) {
     // Find minimum and maximum log-count. By our MatheMagician Steven Wittens
     // aka UnConeD.
-    $tags_tmp = array();
+    $tags_tmp = [];
     $min = 1e9;
     $max = -1e9;
     foreach ($tags as $id => $tag) {

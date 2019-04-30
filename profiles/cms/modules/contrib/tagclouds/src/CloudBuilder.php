@@ -2,6 +2,10 @@
 
 namespace Drupal\tagclouds;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
+
 /**
  * Class CloudBuilder.
  *
@@ -10,11 +14,28 @@ namespace Drupal\tagclouds;
 class CloudBuilder implements CloudBuilderInterface {
 
   /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory) {
+    $this->configFactory = $config_factory;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function build(array $terms) {
     $output = [];
-    $config = \Drupal::config('tagclouds.settings');
+    $config = $this->configFactory->getEditable('tagclouds.settings');
     $display = $config->get('display_type');
     if (empty($display)) {
       $display = 'style';
@@ -52,7 +73,7 @@ class CloudBuilder implements CloudBuilderInterface {
  * Display Single Tag with Style
  */
 private function displayTermLinkWeight($name, $tid, $weight, $description) {
-  if ($term = entity_load('taxonomy_term', $tid)) {
+  if ($term = Term::load($tid)) {
     $uri = $term->urlInfo();
     $options = $uri->getOptions();
     $options['attributes']['class'][] = 'tagclouds';
@@ -72,7 +93,7 @@ private function displayTermLinkWeight($name, $tid, $weight, $description) {
 }
 
 private function displayNodeLinkWeight($name, $tid, $nid, $weight, $description) {
-  if ($term = entity_load('taxonomy_term', $tid) && $node = node_load($nid)) {
+  if ($term = Term::load($tid) && $node = Node::load($nid)) {
     $uri = $node->urlInfo();
     $options = $uri->getOptions();
     $options['attributes']['class'][] = 'tagclouds';
@@ -95,7 +116,7 @@ private function displayNodeLinkWeight($name, $tid, $nid, $weight, $description)
  * Display Single Tag with Style
  */
 private function displayNodeLinkCount($name, $tid, $nid, $count, $description) {
-  if ($term = entity_load('taxonomy_term', $tid) && $node = node_load($nid)) {
+  if ($term = Term::load($tid) && $node = Node::load($nid)) {
     $uri = $node->urlInfo();
     $options = $uri->getOptions();
     $options['attributes']['class'][] = 'tagclouds';
@@ -113,7 +134,7 @@ private function displayNodeLinkCount($name, $tid, $nid, $count, $description) {
 }
 
 private function displayTermLinkCount($name, $tid, $count, $description) {
-  if ($term = entity_load('taxonomy_term', $tid)) {
+  if ($term = Term::load($tid)) {
     $uri = $term->urlInfo();
     $options = $uri->getOptions();
     $options['options']['attributes']['class'][] = 'tagclouds';

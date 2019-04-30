@@ -48,6 +48,11 @@
             "format": "Y-m-d\\TH:i:sP"
         }
     ],
+    "reusable": [
+        {
+            "value": true
+        }
+    ],
     "default_langcode": [
         {
             "value": true,

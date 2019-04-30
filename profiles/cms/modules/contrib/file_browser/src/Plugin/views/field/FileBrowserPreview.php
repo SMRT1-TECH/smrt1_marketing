@@ -55,10 +55,11 @@ class FileBrowserPreview extends FieldPluginBase {
   /**
    * Renders a preview of an arbitrary file.
    *
-   * @param FileInterface $file
+   * @param \Drupal\file\FileInterface $file
    *   The file you want to render a preview of.
    * @param string $image_style
    *   (Optional) An image style to render the preview in.
+   *
    * @return array
    *   A render array representing the file preview.
    */

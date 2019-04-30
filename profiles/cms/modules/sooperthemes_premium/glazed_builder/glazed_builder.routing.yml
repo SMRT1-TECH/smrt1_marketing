@@ -6,6 +6,13 @@ glazed_builder.ajax_callback:
     _permission: 'access content'
     _csrf_token: 'TRUE'
 
+glazed_builder.csrf_refresh:
+  path: '/glazed_builder/csrf'
+  defaults:
+    _controller: 'Drupal\glazed_builder\Controller\AjaxController::ajaxRefresh'
+  requirements:
+    _access: 'TRUE'
+
 glazed_builder.ajax_file_upload_callback:
   path: '/glazed_builder/ajax/file_upload'
   defaults:

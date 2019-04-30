@@ -17,7 +17,7 @@ trait CsvToArrayTrait {
    *   An array of ids.
    */
   protected function csvToArray($strings) {
-    return !empty($strings) ? explode(',', $strings) : array();
+    return !empty($strings) ? explode(',', $strings) : [];
   }
 
 }

@@ -44,40 +44,7 @@ class ModuleConfigureForm extends FormBase {
       ];
     }
 
-    $form['cms_modules']['cms_blog'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Blog'),
-      '#default_value' => TRUE,
-    ];
-
-    $form['cms_modules']['cms_news'] = [
-      '#type' => 'checkbox',
-      '#title' => t('News'),
-      '#default_value' => TRUE,
-    ];
-
-    $form['cms_modules']['cms_events'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Events'),
-      '#default_value' => TRUE,
-    ];
-
-    $form['cms_modules']['cms_portfolio'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Portfolio'),
-      '#default_value' => TRUE,
-    ];
-
-    // We can't selectively disable demo content like this because the default_content module will just auto detect the content
-    // if (is_readable(dirname(__FILE__) . '/../../demo_excludes') && $f = fopen(dirname(__FILE__) . '/../../demo_excludes', 'r')) {
-    //   $demopacks = explode(' ', str_replace(array("\r", "\n"), '', fgets($f)));
-    //   foreach ($demopacks as $value) {
-    //     if (isset($form['cms_modules'][$value])) {
-    //       $form['cms_modules'][$value]['#default_value'] = FALSE;
-    //     }
-    //   }
-    //   fclose($f);
-    // }
+    $path = drupal_get_path('profile', 'cms');
 
     $democontent = TRUE;
     $desc = '';

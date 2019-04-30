@@ -298,6 +298,11 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
     $token = $this->csrfToken->get($url->getInternalPath());
     $url->setOptions(['absolute' => TRUE, 'query' => ['token' => $token]]);
     $settings['glazedAjaxUrl'] = $url->toSTring();
+
+    $csrf_url = Url::fromRoute('glazed_builder.csrf_refresh');
+    $csrf_url->setOptions(['absolute' => TRUE]);
+    $settings['glazedCsrfUrl'] = $csrf_url->toSTring();
+
     $settings['glazedLanguage'] = $glazed_lang;
     $settings['glazedBaseUrl'] = $base_url . base_path() . '/' . $this->getPath('module', 'glazed_builder') . '/glazed_builder/';
 

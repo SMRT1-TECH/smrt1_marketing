@@ -370,7 +370,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
             }
             $block_elements['block-' . $block_id] = $this->t('Block: @block_name', ['@block_name' => ucfirst($definition['category']) . ': ' . $definition['admin_label']])->render();
           }
-
+          asort($block_elements);
           $this->cacheBackend->set('glazed_builder:cms_elements_blocks', $block_elements);
         }
       }
@@ -393,6 +393,7 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
               $views_elements[$key] = t('View: @view_name', ['@view_name' => $view->label() . ' (' . $display->display['display_title'] . ')'])->render();
             }
           }
+          asort($views_elements);
           $this->cacheBackend->set('glazed_builder:cms_elements_views', $views_elements);
         }
       }
@@ -906,20 +907,20 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
   private function stripScriptsAndStylesheetsFromContent(\DOMDocument $doc, array &$response) {
     // Strip script tags
     $scripts = $doc->getElementsByTagName('script');
-    // Note - use a while loop rather than foreach, as the dom document changes when
-    // a node is removed, causing unexpected results
-    while ($scripts->length) {
-      $scripts->item(0)->parentNode->removeChild($scripts->item(0));
-      $scripts = $doc->getElementsByTagName('script');
+    // Looping backwards due to DOM changing and DomNodeList quirks: http://php.net/manual/en/class.domnodelist.php#83390
+    for ($i = $scripts->length; --$i >= 0; ) {
+      $script = $scripts->item($i);
+      if ($script->hasAttribute('src')) {
+        $script->parentNode->removeChild($script);
+      }
     }
 
     // Strip stylesheets
     $stylesheets = $doc->getElementsByTagName('link');
-    while ($stylesheets->length) {
-      $stylesheet = $stylesheets->item(0);
+    for ($i = $stylesheets->length; --$i >= 0; ) {
+      $stylesheet = $stylesheets->item($i);
       if ($stylesheet->hasAttribute('rel') && $stylesheet->getAttribute('rel') == 'stylesheet') {
         $stylesheet->parentNode->removeChild($stylesheet);
-        $stylesheets = $doc->getElementsByTagName('link');
       }
     }
   }

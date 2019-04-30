@@ -117,7 +117,6 @@ class FormatterItem extends FieldItemBase {
         'type' => 'text',
         'size' => 'big',
         'not null' => FALSE,
-        'serialize' => TRUE,
       ],
     ];
 

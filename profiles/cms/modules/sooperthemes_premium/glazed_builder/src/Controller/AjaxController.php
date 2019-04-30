@@ -24,6 +24,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\Core\Url;
+use Drupal\Core\Access\CsrfTokenGenerator;
 
 class AjaxController extends ControllerBase implements AjaxControllerInterface {
 
@@ -105,6 +107,44 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
   protected $glazedBuilderService;
 
   /**
+   * The CSRF token generator service
+   *
+   * @var \Drupal\Core\Access\CsrfTokenGenerator
+   */
+  protected $csrfToken;
+
+  /**
+   * Constructs a GlazedBuilderService object
+   *
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
+   *   The request stack
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The configuration factory
+   * @param \Drupal\Core\File\FileSystemInterface $fileSystem
+   *   The Drupal file system
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user
+   * @ param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
+   *   The module handler service
+   * @param \Drupal\glazed_builder\Service\Handler\BlockHandlerInterface $glazedBlockHandler
+   *   The glazed builder block handler service
+   * @param \Drupal\glazed_builder\Service\Handler\ViewHandlerInterface $glazedViewHandler
+   *   The glazed builder view handler service
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cacheBackend
+   *   The cache service;
+   * @param \Drupal\Core\Entity\EntityManagerInterface $entityManager
+   *   The entity manager service
+   * @param \Drupal\Core\Extension\ThemeHandlerInterface $themeHandler
+   *   The theme handler service
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   The language manager service
+   * @param \Drupal\Core\Block\BlockManagerInterface $blockManager
+   *   The block manager service
+   * @param \Drupal\Core\Access\CsrfTokenGenerator $csrfToken
+   *   The CSRF token generator service
+   */
+
+  /**
    * Construct an AjaxController object
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
@@ -131,8 +171,10 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
    *   The entity type bundle info manager
    * @param \Drupal\glazed_builder\Service\GlazedBuilderServiceInterface $glazedBuilderService
    *   The glazed builder service
+   * @param \Drupal\Core\Access\CsrfTokenGenerator $csrfToken
+   *   The CSRF token generator service
    */
-  public function __construct(AccountProxyInterface $currentUser, ModuleHandlerInterface $moduleHandler, Connection $database, RequestStack $requestStack, EntityTypeManagerInterface $entityTypeManager, EntityFieldManagerInterface $entityFieldManager, AssetResolverInterface $assetResolver, AssetCollectionRendererInterface $cssAssetCollectionRenderer, AssetCollectionRendererInterface $jsAssetCollectionRenderer, EntityTypeBundleInfoInterface $entityTypeBundleInfoManager, GlazedBuilderServiceInterface $glazedBuilderService) {
+  public function __construct(AccountProxyInterface $currentUser, ModuleHandlerInterface $moduleHandler, Connection $database, RequestStack $requestStack, EntityTypeManagerInterface $entityTypeManager, EntityFieldManagerInterface $entityFieldManager, AssetResolverInterface $assetResolver, AssetCollectionRendererInterface $cssAssetCollectionRenderer, AssetCollectionRendererInterface $jsAssetCollectionRenderer, EntityTypeBundleInfoInterface $entityTypeBundleInfoManager, GlazedBuilderServiceInterface $glazedBuilderService, CsrfTokenGenerator $csrfToken) {
     $this->currentUser = $currentUser;
     $this->moduleHandler = $moduleHandler;
     $this->database = $database;
@@ -144,6 +186,7 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
     $this->jsAssetCollectionRenderer = $jsAssetCollectionRenderer;
     $this->entityTypeBundleInfoManager = $entityTypeBundleInfoManager;
     $this->glazedBuilderService = $glazedBuilderService;
+    $this->csrfToken = $csrfToken;
   }
 
   /**
@@ -161,8 +204,21 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
       $container->get('asset.css.collection_renderer'),
       $container->get('asset.js.collection_renderer'),
       $container->get('entity_type.bundle.info'),
-      $container->get('glazed_builder.service')
+      $container->get('glazed_builder.service'),
+      $container->get('csrf_token')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function ajaxRefresh() {
+    $url = Url::fromRoute('glazed_builder.ajax_callback');
+    $token = $this->csrfToken->get($url->getInternalPath());
+    $url->setOptions(['absolute' => TRUE, 'query' => ['token' => $token]]);
+    // return new JsonResponse();
+    // return new Response($this->tokenGenerator->get(CsrfRequestHeaderAccessCheck::TOKEN_KEY), 200, ['Content-Type' => 'text/plain']);
+    return new JsonResponse($url->toSTring());
   }
 
   /**
@@ -175,6 +231,16 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
       // Determine if the current user has 'edit via glazed builder' permission
       case 'glazed_login':
         return $this->hasEditAccess();
+
+        break;
+      // Determine if the current user has 'edit via glazed builder' permission
+      case 'glazed_builder_csrf':
+        if ($this->currentUser->hasPermission('edit via glazed builder')) {
+          $url = Url::fromRoute('glazed_builder.ajax_callback');
+          $token = $this->csrfToken->get($url->getInternalPath());
+          $url->setOptions(['absolute' => TRUE, 'query' => ['token' => $token]]);
+          return new JsonResponse($url->toSTring());
+        }
 
         break;
 
@@ -349,7 +415,9 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
           $template = $_POST['template'];
 
           $this->saveUserTemplate($name, $template);
+          return new JsonResponse('');
         }
+
 
         break;
 

@@ -53,12 +53,11 @@ class EntityReferenceShsFormatter extends EntityReferenceLabelFormatter {
     $output_as_link = $this->getSetting('link');
 
     foreach ($this->getEntitiesToView($items, $langcode) as $delta => $entity) {
-      $label = $entity->label();
       // If the link is to be displayed and the entity has a uri, display a
       // link.
       if ($output_as_link && !$entity->isNew()) {
         try {
-          $uri = $entity->urlInfo();
+          $entity->urlInfo();
         }
         catch (UndefinedLinkTemplateException $e) {
           // This exception is thrown by \Drupal\Core\Entity\Entity::urlInfo()

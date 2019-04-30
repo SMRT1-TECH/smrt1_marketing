@@ -1,9 +1,12 @@
 <?php
 
+use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\Crypt;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
-use Drupal\Component\Serialization\Json;
 
 /**
  * @file
@@ -30,9 +33,14 @@ function glazed_builder_install() {
 function glazed_builder_requirements($phase) {
   $requirements = [];
   $result = FALSE;
+  $site = Settings::getHashSalt();
+  $site = Crypt::hmacBase64($site, '3TUoWRDSEFn77KMT');
   $domain = Html::escape(\Drupal::request()->getHost());
+  $base_url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
+  $end_point = 'https://www.sooperthemes.com/api/domain-status/' . $domain . '?site_base_url=' . $base_url . '&site=' . $site;
+  drupal_set_message($end_point);
   try {
-    $result = \Drupal::httpClient()->request('GET', 'https://www.sooperthemes.com/api/domain-status/' . $domain);
+    $result = \Drupal::httpClient()->request('GET', $end_point);
   }
   catch (RequestException $e) {
     watchdog_exception('glazed_builder', $e);

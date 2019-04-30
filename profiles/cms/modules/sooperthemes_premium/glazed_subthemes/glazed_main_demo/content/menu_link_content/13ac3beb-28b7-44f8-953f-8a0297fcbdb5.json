@@ -33,6 +33,11 @@
             "value": "menu_link_content"
         }
     ],
+    "enabled": [
+        {
+            "value": true
+        }
+    ],
     "title": [
         {
             "value": "Content Elements",
@@ -68,11 +73,6 @@
         }
     ],
     "expanded": [
-        {
-            "value": true
-        }
-    ],
-    "enabled": [
         {
             "value": true
         }

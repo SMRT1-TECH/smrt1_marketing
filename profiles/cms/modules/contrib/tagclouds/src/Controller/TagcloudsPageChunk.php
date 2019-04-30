@@ -5,6 +5,9 @@ namespace Drupal\tagclouds\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\tagclouds\Controller\CsvToArrayTrait;
+use Drupal\tagclouds\TagServiceInterface;
+use Drupal\tagclouds\CloudBuilderInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller routines for user routes.
@@ -12,6 +15,41 @@ use Drupal\tagclouds\Controller\CsvToArrayTrait;
 class TagcloudsPageChunk extends ControllerBase {
 
   use CsvToArrayTrait;
+
+  /**
+   * @var \Drupal\tagclouds\TagServiceInterface $tagcloudTag
+   *   Injection of tag service.
+   */
+  protected $tagcloudTag;
+
+  /**
+   * @var \Drupal\tagclouds\CloudBuilderInterface $tagcloudsCloudBuilder
+   *   Injection of cloud builder service.
+   */
+  protected $tagcloudsCloudBuilder;
+
+  /**
+   * Constructs a BlockContent object.
+   *
+   * @param \Drupal\tagclouds\TagServiceInterface $tag_service
+   *   The tag service.
+   * @param \Drupal\tagclouds\CloudBuilderInterface $cloud_builder
+   *   The cloud builder.
+   */
+  public function __construct(TagServiceInterface $tag_service, CloudBuilderInterface $cloud_builder) {
+    $this->tagcloudTag = $tag_service;
+    $this->tagcloudsCloudBuilder = $cloud_builder;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('tagclouds.tag'),
+      $container->get('tagclouds.cloud_builder')
+    );
+  }
 
   /**
    * Renders a list of vocabularies.
@@ -23,29 +61,27 @@ class TagcloudsPageChunk extends ControllerBase {
    *   A render array.
    */
   public function chunk($tagclouds_vocs_str = '') {
-    /** @var Drupal\tagclouds\TagServiceInterface $tag_service */
-    $tag_service = \Drupal::service('tagclouds.tag');
-
-    /* @var Drupal\tagclouds\CloudBuilder $cloud_builder */
-    $cloud_builder = \Drupal::service('tagclouds.cloud_builder');
-
     $vocs = $this->csvToArray($tagclouds_vocs_str);
     if (empty($vocs)) {
-      $query = \Drupal::entityQuery('taxonomy_vocabulary');
+      $query = $this->entityTypeManager()
+        ->getStorage('taxonomy_vocabulary')
+        ->getQuery();
       $all_ids = $query->execute();
       foreach (Vocabulary::loadMultiple($all_ids) as $vocabulary) {
         $vocs[] = $vocabulary->id();
       }
     }
     $config = $this->config('tagclouds.settings');
-    $tags = $tag_service->getTags($vocs, $config->get('levels'), $config->get('page_amount'));
+    $tags = $this
+      ->tagcloudTag
+      ->getTags($vocs, $config->get('levels'), $config->get('page_amount'));
 
-    $sorted_tags = $tag_service->sortTags($tags);
+    $sorted_tags = $this->tagcloudTag->sortTags($tags);
 
     $output = [
       '#attached' => ['library' => 'tagclouds/clouds'],
       '#theme' => 'tagclouds_weighted',
-      '#children' => $cloud_builder->build($sorted_tags),
+      '#children' => $this->tagcloudsCloudBuilder->build($sorted_tags),
     ];
 
     return $output;
