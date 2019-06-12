@@ -5,7 +5,6 @@
  * Install, update and uninstall functions for the taxonomy module.
  */
 
-use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Site\Settings;
 
@@ -170,8 +169,8 @@ function taxonomy_update_8601() {
     ->setTranslatable(TRUE)
     ->setDefaultValue(TRUE);
 
-  $content_translation_status = $definition_update_manager->getFieldStorageDefinition('content_translation_status', 'taxonomy_term');
-  if ($content_translation_status) {
+  $has_content_translation_status_field = $definition_update_manager->getFieldStorageDefinition('content_translation_status', 'taxonomy_term');
+  if ($has_content_translation_status_field) {
     $status->setInitialValueFromField('content_translation_status', TRUE);
   }
   else {
@@ -180,13 +179,9 @@ function taxonomy_update_8601() {
   $definition_update_manager->installFieldStorageDefinition('status', 'taxonomy_term', 'taxonomy_term', $status);
 
   // Uninstall the 'content_translation_status' field if needed.
-  if ($content_translation_status) {
-    try {
-      $definition_update_manager->uninstallFieldStorageDefinition($content_translation_status);
-    }
-    catch (EntityStorageException $e) {
-      // The field has already been deleted and it is in the process of being purged.
-    }
+  if ($has_content_translation_status_field) {
+    $content_translation_status = $definition_update_manager->getFieldStorageDefinition('content_translation_status', 'taxonomy_term');
+    $definition_update_manager->uninstallFieldStorageDefinition($content_translation_status);
   }
 
   return t('The publishing status field has been added to taxonomy terms.');
