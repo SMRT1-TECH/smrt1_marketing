@@ -10,14 +10,13 @@
   Drupal.behaviors.sooperthemesPortfolio = {
     attach: function (context, settings) {
 
-      var portfolios = settings.stPortfolios;
       $('.js-sp-wrapper').each(function () {
+
         var id = this.id;
-
         var $container = $(this).find('.js-sp-container');
-        if (portfolios[id]) {
+        if (settings[id]) {
 
-          var config = portfolios[id];
+          var config = settings[id];
 
           var inline = $container.data('content-page') === 'inline';
           var callback = inline ? 'singlePageInlineCallback' : 'singlePageCallback';
@@ -38,7 +37,6 @@
               that[updateCallback]('Error! Please refresh the page!');
             });
           };
-
           $container.once(id).cubeportfolio(config)
         }
       });

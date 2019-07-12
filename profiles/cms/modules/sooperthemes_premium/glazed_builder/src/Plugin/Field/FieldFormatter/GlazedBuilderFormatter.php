@@ -194,6 +194,7 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
     $bundle = $this->fieldDefinition->get('bundle');
     $entity = $items->getEntity();
     $id = $entity->id();
+    $vid = $entity->getRevisionId();
     $field_name = $this->fieldDefinition->get('field_name');
     $entity_label = $entity->label();
 
@@ -207,7 +208,7 @@ class GlazedBuilderFormatter extends FormatterBase implements ContainerFactoryPl
         $langcode = $this->languageManager->getCurrentLanguage()->getId();
       }
       $human_readable = base64_encode(Html::escape($field_name . ' on ' . str_replace('node', 'page', $entity_type) . ' \'' . $entity_label . '\''));
-      $attrs = 'class="az-element az-container glazed" data-az-type="' . $entity_type . '|' . $bundle . '" data-az-name="' . $id . '|' . $field_name . '" data-az-human-readable="' . $human_readable . '" data-az-langcode="' . $langcode . '"';
+      $attrs = 'class="az-element az-container glazed" data-az-type="' . $entity_type . '|' . $bundle . '" data-az-name="' . $id . '|' . $vid . '|' . $field_name . '" data-az-human-readable="' . $human_readable . '" data-az-langcode="' . $langcode . '"';
       preg_match('/^\s*\<[\s\S]*\>\s*$/', $value, $html_format);
 
       if (empty($html_format)) {

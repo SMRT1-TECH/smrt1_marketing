@@ -44,6 +44,12 @@ class GlazedBuilderProfileForm extends EntityForm {
       '#default_value' => $this->entity->status(),
     ];
 
+    $form['sidebar'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show snippet sidebar'),
+      '#default_value' => $this->entity->get('sidebar'),
+    ];
+
     // $form['weight'] = [
     //   '#type' => 'weight',
     //   '#title' => $this->t('Weight'),

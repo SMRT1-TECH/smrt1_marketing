@@ -274,11 +274,12 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
           $bundle = $type[1];
           $name = explode('|', $_POST['name']);
           $entity_id = $name[0];
-          $field_name = $name[1];
+          $revision_id = $name[1];
+          $field_name = $name[2];
           $encoded_html = $_POST['shortcode'];
           $langcode = $_POST['lang'];
 
-          return $this->saveContainer($entity_type, $bundle, $entity_id, $field_name, $encoded_html, $langcode);
+          return $this->saveContainer($entity_type, $bundle, $entity_id, $revision_id, $field_name, $encoded_html, $langcode);
         }
 
         break;
@@ -568,16 +569,24 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
    *
    * @return Symfony\Component\HttpFoundation\JsonResponse
    */
-  private function saveContainer($entityType, $bundle, $entityId, $fieldName, $encodedHtml, $langcode) {
+  private function saveContainer($entityType, $bundle, $entityId, $revisionId, $fieldName, $encodedHtml, $langcode) {
     // Saves Glazed Builder container instance to field, respecting permissions, language and revisions if supported
-    $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
-    if ($entity && $entity->access('update', $this->currentUser)) {
-      if ($entity->isTranslatable()) {
-        $languages = $entity->getTranslationLanguages();
-        if (isset($languages[$langcode])) {
-          $entity = $entity->getTranslation($langcode);
-        }
+    $revisionableEntity = $this->entityTypeManager->getStorage($entityType)->getEntityType()->isRevisionable();
+    if ($revisionableEntity) {
+      $entity = $this->entityTypeManager->getStorage($entityType)->loadRevision($revisionId);
+    }
+    else {
+      $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
+    }
+    // Load translation if available.
+    if ($entity->isTranslatable()) {
+      $languages = $entity->getTranslationLanguages();
+      if (isset($languages[$langcode])) {
+        $entity = $entity->getTranslation($langcode);
       }
+    }
+
+    if ($entity && $entity->access('update', $this->currentUser)) {
       $decoded_short_code = $this->glazedBuilderService->insertBaseTokens(rawurldecode($this->decodeData($encodedHtml)));
 
       $field_values = $entity->get($fieldName)->getValue();
@@ -587,12 +596,14 @@ class AjaxController extends ControllerBase implements AjaxControllerInterface {
       $entity->get($fieldName)->set(0, $field_value);
 
       // Check if the entity type supports revisions.
-      if ($this->entityTypeManager->getDefinition($entityType)->getKey('revision')) {
+      if ($revisionableEntity) {
         $entity->setNewRevision();
+        $entity->isDefaultRevision(TRUE);
         if ($entity instanceof RevisionLogInterface) {
           // If a new revision is created, save the current user as
           // revision author.
           $entity->setRevisionUserId($this->currentUser->id());
+          $entity->setRevisionLogMessage('Saved with Glazed builder');
           $entity->setRevisionCreationTime($this->getRequestTime());
         }
       }

@@ -90,7 +90,7 @@ class UninstallForm extends ConfirmFormBase {
 
     batch_set($batch);
 
-    drupal_set_message($this->t('Tokens have been expanded.'));
+    \Drupal::messenger()->addMessage($this->t('Tokens have been expanded.'));
   }
 
   public static function expandTokens($field_info, &$context) {
@@ -101,7 +101,7 @@ class UninstallForm extends ConfirmFormBase {
 
     $entity_type_definition = \Drupal::entityTypeManager()->getDefinition($field_info['entity_type']);
 
-    $query_base = db_select($entity_type_definition->getBaseTable(), 'entity_table')
+    $query_base = \Drupal::database()->select($entity_type_definition->getBaseTable(), 'entity_table')
       ->fields('entity_table', array($entity_type_definition->getKey('id')))
       ->condition('entity_table.' . $entity_type_definition->getKey('bundle'), $field_info['bundle']);
 
@@ -117,7 +117,7 @@ class UninstallForm extends ConfirmFormBase {
         ->execute()
         ->fetchCol();
 
-      $storage = \Drupal::entityManager()->getStorage($field_info['entity_type']);
+      $storage = \Drupal::entityTypeManager()->getStorage($field_info['entity_type']);
       $entities = $storage->loadMultiple($entity_ids);
 
       $glazed_service = \Drupal::service('glazed_builder.service');

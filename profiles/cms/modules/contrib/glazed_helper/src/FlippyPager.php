@@ -221,7 +221,7 @@ class FlippyPager {
       return FALSE;
     }
     $types = theme_get_setting('prevnext_content_types');
-    return (node_is_page($node) && ($types[$node->getType()]));
+    return (node_is_page($node) && (isset($types[$node->getType()])) && ($types[$node->getType()]));
   }
 
   /**

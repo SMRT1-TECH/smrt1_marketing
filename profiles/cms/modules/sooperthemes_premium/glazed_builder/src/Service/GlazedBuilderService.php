@@ -911,6 +911,10 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
     for ($i = $scripts->length; --$i >= 0; ) {
       $script = $scripts->item($i);
       if ($script->hasAttribute('src')) {
+        $parent_classes = $script->parentNode->getAttribute('class');
+        if (strpos($parent_classes, 'az-html') !== FALSE) {
+          return; // skip over tags in HTML elements
+        }
         $script->parentNode->removeChild($script);
       }
     }
@@ -920,6 +924,10 @@ class GlazedBuilderService implements GlazedBuilderServiceInterface {
     for ($i = $stylesheets->length; --$i >= 0; ) {
       $stylesheet = $stylesheets->item($i);
       if ($stylesheet->hasAttribute('rel') && $stylesheet->getAttribute('rel') == 'stylesheet') {
+        $parent_classes = $stylesheet->parentNode->getAttribute('class');
+        if (strpos($parent_classes, 'az-html') !== FALSE) {
+          return; // skip over tags in HTML elements
+        }
         $stylesheet->parentNode->removeChild($stylesheet);
       }
     }

@@ -11,6 +11,9 @@ glazed_builder.glazed_builder_profile.*:
     uuid:
       type: string
       label: UUID
+    sidebar:
+      type: boolean
+      label: Sidebar
     weight:
       type: integer
       label: Weight

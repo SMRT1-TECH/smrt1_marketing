@@ -38,7 +38,6 @@ function glazed_builder_requirements($phase) {
   $domain = Html::escape(\Drupal::request()->getHost());
   $base_url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
   $end_point = 'https://www.sooperthemes.com/api/domain-status/' . $domain . '?site_base_url=' . $base_url . '&site=' . $site;
-  drupal_set_message($end_point);
   try {
     $result = \Drupal::httpClient()->request('GET', $end_point);
   }
@@ -151,4 +150,18 @@ function glazed_builder_update_8005() {
  */
 function glazed_builder_update_8006() {
   drupal_flush_all_caches();
+}
+
+/**
+ * Update config for glazed builder profiles.
+ */
+function glazed_builder_update_8007() {
+  $profiles = \Drupal::entityTypeManager()
+    ->getStorage('glazed_builder_profile')
+    ->loadMultiple();
+
+  foreach ($profiles as $profile) {
+    $profile->set('sidebar', TRUE);
+    $profile->save();
+  }
 }

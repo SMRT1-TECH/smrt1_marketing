@@ -26,7 +26,7 @@ glazed_builder.admin_root:
   path: '/admin/config/content/glazed_builder'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-    _title: 'Glazed builder'
+    _title: 'Glazed Builder'
   requirements:
     _permission: 'administer glazed builder configuration'
 

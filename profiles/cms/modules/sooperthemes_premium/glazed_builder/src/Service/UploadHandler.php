@@ -2,6 +2,7 @@
 
 namespace Drupal\glazed_builder\Service;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 
@@ -1051,7 +1052,7 @@ class UploadHandler
         $this->destroy_image_object($file_path);
     }
 
-    protected function handle_file_upload($uploaded_file, $name, $size, $type, $content_range) {
+    protected function handle_file_upload($uploaded_file, $name, $size, $type, $content_range, $error = NULL, $index = NULL) {
         $file = new \stdClass();
         $file->name = $this->get_file_name($name, $content_range);
         $file->size = $this->fix_integer_overflow((int)$size);
@@ -1295,9 +1296,9 @@ class UploadHandler
                         $file_name ? $file_name : $upload['name'][$index],
                         $size ? $size : $upload['size'][$index],
                         $upload['type'][$index],
+                        $content_range,
                         $upload['error'][$index],
-                        $index,
-                        $content_range
+                        $index
                     );
 
                     if($file) {
@@ -1359,7 +1360,8 @@ class UploadHandler
     protected function getUploadDirectory() {
         $default_scheme = \Drupal::config('system.file')->get('default_scheme');
         $directory = $default_scheme . '://glazed_builder_images';
-        file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+        \Drupal::service('file_system')
+          ->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
 
         return $directory;
     }

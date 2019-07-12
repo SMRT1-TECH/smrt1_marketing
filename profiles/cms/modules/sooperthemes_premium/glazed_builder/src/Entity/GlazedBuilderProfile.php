@@ -58,6 +58,13 @@ class GlazedBuilderProfile extends ConfigEntityBase implements GlazedBuilderProf
   protected $status = TRUE;
 
   /**
+   * Show snippet sidebar.
+   *
+   * @var bool
+   */
+  protected $sidebar = TRUE;
+
+  /**
    * Profile weight.
    *
    * @var int

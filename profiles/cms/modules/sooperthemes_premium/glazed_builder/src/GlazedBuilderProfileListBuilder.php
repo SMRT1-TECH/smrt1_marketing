@@ -27,6 +27,7 @@ class GlazedBuilderProfileListBuilder extends DraggableListBuilder {
     $header['label'] = $this->t('Label');
     $header['roles'] = $this->t('Roles');
     $header['status'] = $this->t('Status');
+    $header['sidebar'] = $this->t('Sidebar');
     return $header + parent::buildHeader();
   }
 
@@ -38,6 +39,7 @@ class GlazedBuilderProfileListBuilder extends DraggableListBuilder {
     $row['label'] = $entity->label();
     $row['id']['data']['#markup'] = implode(',', $entity->get('roles')) ;
     $row['status']['data']['#markup'] = $entity->status() ? $this->t('Enabled') : $this->t('Disabled');
+    $row['sidebar']['data']['#markup'] = $entity->get('sidebar') ? $this->t('Showed') : $this->t('Hidden');
     return $row + parent::buildRow($entity);
   }
 
@@ -172,7 +174,6 @@ class GlazedBuilderProfileListBuilder extends DraggableListBuilder {
       ->set('media_browser', $form_state->getValue('media_browser'))
       ->save();
     $this->messenger()->addStatus($this->t('The configuration has been updated'));
-    parent::submitForm($form, $form_state);
   }
 
   /**

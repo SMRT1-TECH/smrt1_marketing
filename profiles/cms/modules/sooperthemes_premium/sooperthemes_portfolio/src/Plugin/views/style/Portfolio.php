@@ -601,14 +601,13 @@ class Portfolio extends StylePluginBase {
         'loadItems' => $this->view->pager->options['items_per_page'],
       ];
     }
-
-    $build['#attached']['drupalSettings']['stPortfolios'][$portfolio_selector] = $settings;
+    $build['#attached']['drupalSettings'][$portfolio_selector] = $settings;
     foreach ($this->view->result as $result) {
       if (($this->options['link'])
         && ($this->options['content_page'] == FALSE)
         && property_exists($result, '_entity')
-        && method_exists($result->_entity, 'url')) {
-        $entity_url = $result->_entity->url();
+        && method_exists($result->_entity, 'toUrl')) {
+        $entity_url = $result->_entity->toUrl()->toString();
         $result->onclick = 'onclick="javascript:location.href=\'' . $entity_url . '\'"';
       }
       else {

@@ -40,7 +40,7 @@ class FullScreenSearchBlock extends BlockBase {
         '#type' => 'button',
         '#button_type' => 'button',
         '#value' => '',
-        '#attributes' => ['class' => ['btn-link', 'full-screen-search-button', 'icon', 'glyphicon', 'glyphicon-search']],
+        '#attributes' => ['class' => ['btn-link', 'full-screen-search-button', 'icon', 'glyphicon', 'glyphicon-search'], 'value' => $this->t('Search')],
       ];
       $content['search_form'] = $search_form;
       return $content;
