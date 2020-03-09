@@ -3,3 +3,8 @@
  */
 .navbar-brand {
   display: none !important; }
+
+  .menu--footer li {
+  	display: inline-block;
+  	padding-bottom: 12px;
+  }
